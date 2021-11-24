@@ -10,11 +10,6 @@ import (
 	server "github.com/mw-felker/centerpoint-instance-api/pkg/server"
 )
 
-func jsonResponse(writer http.ResponseWriter, response []byte) {
-	writer.Header().Set("Content-Type", "application/json")
-	writer.Write(response)
-}
-
 func createInstance(prefabName string, position models.Vector3) models.Instance {
 	created := time.Now()
 	var ownerId = 1
@@ -42,12 +37,10 @@ func getInstances() []models.Instance {
 func getInstancesHandler(writer http.ResponseWriter, request *http.Request) {
 	var instances = getInstances()
 	response, e := json.Marshal(instances)
-
 	if e != nil {
 		log.Panic(e)
 	}
-
-	jsonResponse(writer, response)
+	server.Respond(writer, response)
 }
 
 func main() {

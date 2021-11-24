@@ -27,6 +27,11 @@ func RegisterRoutes(routes []Route) {
 	}
 }
 
+func Respond(writer http.ResponseWriter, response []byte) {
+	writer.Header().Set("Content-Type", "application/json")
+	writer.Write(response)
+}
+
 /*
 func validateRequest(request *http.Request) bool {
 	for _, route := range routes {
