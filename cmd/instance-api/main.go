@@ -7,29 +7,8 @@ import (
 	"time"
 
 	models "github.com/mw-felker/centerpoint-instance-api/pkg/models"
+	server "github.com/mw-felker/centerpoint-instance-api/pkg/server"
 )
-
-type Route struct {
-	path    string
-	method  string
-	handler http.HandlerFunc
-}
-
-type Routes []Route
-
-var routes Routes
-
-const PORT = ":8000"
-
-func defineRoutes() {
-	routes = Routes{
-		{
-			path:    "/instances",
-			method:  "GET",
-			handler: getInstanceHandler,
-		},
-	}
-}
 
 func jsonResponse(writer http.ResponseWriter, response []byte) {
 	writer.Header().Set("Content-Type", "application/json")
@@ -52,6 +31,7 @@ func createInstance(prefabName string, position models.Vector3) models.Instance 
 }
 
 func getInstances() []models.Instance {
+
 	return []models.Instance{
 		createInstance("Rock5", models.Vector3{X: 1, Y: 10, Z: 1}),
 		createInstance("Rock1", models.Vector3{X: 10, Y: 1, Z: 1}),
@@ -59,57 +39,26 @@ func getInstances() []models.Instance {
 	}
 }
 
-func requestFailed(writer http.ResponseWriter, request *http.Request) {
-	log.Println(request.Method + " " + request.URL.Path + " is an invalid endpoint")
-	http.Error(writer, "Method not allowed", http.StatusMethodNotAllowed)
-	writer.Write(nil)
-}
+func getInstancesHandler(writer http.ResponseWriter, request *http.Request) {
+	var instances = getInstances()
+	response, e := json.Marshal(instances)
 
-func getInstanceHandler(writer http.ResponseWriter, request *http.Request) {
-
-	if !validateRequest(request) {
-		requestFailed(writer, request)
-	} else {
-		var instances = getInstances()
-		response, e := json.Marshal(instances)
-
-		if e != nil {
-			log.Panic(e)
-		}
-
-		jsonResponse(writer, response)
+	if e != nil {
+		log.Panic(e)
 	}
 
-}
-
-func validateRequest(request *http.Request) bool {
-	for _, route := range routes {
-		if request.URL.Path == route.path {
-			if request.Method == route.method {
-				return true
-			}
-		}
-	}
-
-	return false
-}
-
-func registerRoutes(routes []Route) {
-	log.Println("Registering routes...")
-	for _, route := range routes {
-		http.HandleFunc(route.path, route.handler)
-		log.Println(route.method + " " + route.path)
-	}
-}
-
-func startServer() {
-	log.Fatal(http.ListenAndServe(PORT, nil))
+	jsonResponse(writer, response)
 }
 
 func main() {
-	logMessage := "Starting Centerpoint Instance API service at http://localhost" + PORT
-	log.Println(logMessage)
-	defineRoutes()
-	registerRoutes(routes)
-	startServer()
+	const PORT = ":8000"
+	var routes = server.Routes{
+		{
+			Path:    "/instances",
+			Method:  "GET",
+			Handler: getInstancesHandler,
+		},
+	}
+	server.RegisterRoutes(routes)
+	server.Start(PORT)
 }
