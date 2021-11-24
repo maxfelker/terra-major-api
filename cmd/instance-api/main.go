@@ -5,22 +5,9 @@ import (
 	"log"
 	"net/http"
 	"time"
+
+	models "github.com/mw-felker/centerpoint-instance-api/pkg/models"
 )
-
-type Vector3 struct {
-	X float32 `json:"x"`
-	Y float32 `json:"y"`
-	Z float32 `json:"z"`
-}
-
-type Instance struct {
-	PrefabId string    `json:"prefabId"`
-	OwnerId  int       `json:"ownerId"`
-	Created  time.Time `json:"created"`
-	Modified time.Time `json:"modified"`
-	Health   int       `json:"health"`
-	Position Vector3   `json:"position"`
-}
 
 type Route struct {
 	path    string
@@ -49,26 +36,26 @@ func jsonResponse(writer http.ResponseWriter, response []byte) {
 	writer.Write(response)
 }
 
-func createInstance(prefabName string, position Vector3) Instance {
+func createInstance(prefabName string, position models.Vector3) models.Instance {
 	created := time.Now()
 	var ownerId = 1
 	var health = 100
 
-	return Instance{
-		prefabName,
-		ownerId,
-		created,
-		created, // set modfied same as created (clean)
-		health,
-		position,
+	return models.Instance{
+		PrefabName: prefabName,
+		OwnerId:    ownerId,
+		Created:    created,
+		Modified:   created, // set modfied same as created (clean)
+		Health:     health,
+		Position:   position,
 	}
 }
 
-func getInstances() []Instance {
-	return []Instance{
-		createInstance("Rock5", Vector3{1, 10, 1}),
-		createInstance("Rock1", Vector3{10, 1, 1}),
-		createInstance("Rock1", Vector3{0, 1, 10}),
+func getInstances() []models.Instance {
+	return []models.Instance{
+		createInstance("Rock5", models.Vector3{X: 1, Y: 10, Z: 1}),
+		createInstance("Rock1", models.Vector3{X: 10, Y: 1, Z: 1}),
+		createInstance("Rock1", models.Vector3{X: 0, Y: 1, Z: 10}),
 	}
 }
 
