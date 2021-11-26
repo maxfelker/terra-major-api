@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"time"
@@ -25,13 +26,24 @@ func createInstance(prefabName string, position models.Vector3) models.Instance 
 	}
 }
 
-func getInstances() []models.Instance {
-
-	return []models.Instance{
-		createInstance("Rock5", models.Vector3{X: 1, Y: 10, Z: 1}),
-		createInstance("Rock1", models.Vector3{X: 10, Y: 1, Z: 1}),
-		createInstance("Rock1", models.Vector3{X: 0, Y: 1, Z: 10}),
+func errorHandler(e error) {
+	if e != nil {
+		log.Panic(e)
 	}
+}
+
+func getInstances() []models.Instance {
+	var response []models.Instance
+	jsonData, err := ioutil.ReadFile("./data/instances-mock.json")
+	if err != nil {
+		errorHandler(err)
+	}
+	err = json.Unmarshal(jsonData, &response)
+	if err != nil {
+		errorHandler(err)
+	}
+
+	return response
 }
 
 func getInstancesHandler(writer http.ResponseWriter, request *http.Request) {

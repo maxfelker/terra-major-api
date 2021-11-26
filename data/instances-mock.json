@@ -1,0 +1,74 @@
+[
+  {
+    "prefabName": "HarvestingRobot",
+    "ownerId": 1,
+    "created": "2021-11-25T15:40:37.956004-05:00",
+    "modified": "2021-11-25T15:40:37.956004-05:00",
+    "health": 100,
+    "position": { "x": 20, "y": 0, "z": 10 }
+  },
+  {
+    "prefabName": "RockFormation2",
+    "ownerId": 1,
+    "created": "2021-11-25T15:40:37.956005-05:00",
+    "modified": "2021-11-25T15:40:37.956005-05:00",
+    "health": 100,
+    "position": { "x": -100, "y": 0, "z": -50 }
+  },
+  {
+    "prefabName": "RockFormation4",
+    "ownerId": 1,
+    "created": "2021-11-25T15:40:37.956005-05:00",
+    "modified": "2021-11-25T15:40:37.956005-05:00",
+    "health": 100,
+    "position": { "x": 100, "y": 0, "z": -50 }
+  },
+  {
+    "prefabName": "RockFormation1",
+    "ownerId": 1,
+    "created": "2021-11-25T15:40:37.956005-05:00",
+    "modified": "2021-11-25T15:40:37.956005-05:00",
+    "health": 100,
+    "position": { "x": 20, "y": 0, "z": 200 }
+  },
+  {
+    "prefabName": "RockFormation2",
+    "ownerId": 1,
+    "created": "2021-11-25T15:40:37.956005-05:00",
+    "modified": "2021-11-25T15:40:37.956005-05:00",
+    "health": 100,
+    "position": { "x": -200, "y": 0, "z": -200 }
+  },
+  {
+    "prefabName": "RockFormation3",
+    "ownerId": 1,
+    "created": "2021-11-25T15:40:37.956005-05:00",
+    "modified": "2021-11-25T15:40:37.956005-05:00",
+    "health": 100,
+    "position": { "x": 100, "y": 0, "z": 100 }
+  },
+  {
+    "prefabName": "Ore",
+    "ownerId": 1,
+    "created": "2021-11-25T15:40:37.956005-05:00",
+    "modified": "2021-11-25T15:40:37.956005-05:00",
+    "health": 100,
+    "position": { "x": 20, "y": 0, "z": 20 }
+  },
+  {
+    "prefabName": "Ore",
+    "ownerId": 1,
+    "created": "2021-11-25T15:40:37.956005-05:00",
+    "modified": "2021-11-25T15:40:37.956005-05:00",
+    "health": 100,
+    "position": { "x": 200, "y": 0, "z": -200 }
+  },
+  {
+    "prefabName": "Ore",
+    "ownerId": 1,
+    "created": "2021-11-25T15:40:37.956005-05:00",
+    "modified": "2021-11-25T15:40:37.956005-05:00",
+    "health": 100,
+    "position": { "x": 100, "y": 0, "z": 100 }
+  }
+]
