@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	models "github.com/mw-felker/centerpoint-instance-api/pkg/models"
@@ -55,8 +56,15 @@ func getInstancesHandler(writer http.ResponseWriter, request *http.Request) {
 	server.Respond(writer, response)
 }
 
+func getEnv(key, fallback string) string {
+	if value, ok := os.LookupEnv(key); ok {
+		return value
+	}
+	return fallback
+}
+
 func main() {
-	const PORT = ":8000"
+	var PORT = getEnv("PORT", "8000")
 	var routes = server.Routes{
 		{
 			Path:    "/instances",

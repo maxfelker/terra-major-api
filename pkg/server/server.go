@@ -14,9 +14,10 @@ type Route struct {
 type Routes []Route
 
 func Start(PORT string) {
-	logMessage := "Listen for requests at http://localhost" + PORT
+	var port = ":" + PORT
+	logMessage := "Listen for requests at http://localhost" + port
 	log.Println(logMessage)
-	log.Fatal(http.ListenAndServe(PORT, nil))
+	log.Fatal(http.ListenAndServe(port, nil))
 }
 
 func RegisterRoutes(routes []Route) {
