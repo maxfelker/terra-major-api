@@ -1,27 +1,21 @@
 [
   {
+    "prefabName": "Barrack04B",
+    "ownerId": 1,
+    "created": "2021-11-25T15:40:37.956004-05:00",
+    "modified": "2021-11-25T15:40:37.956004-05:00",
+    "health": 100,
+    "position": { "x": 300, "y": 0, "z": -100 },
+    "rotation": { "x": 0, "y": 0, "z": 0 }
+  },
+  {
     "prefabName": "HarvestingRobot",
     "ownerId": 1,
     "created": "2021-11-25T15:40:37.956004-05:00",
     "modified": "2021-11-25T15:40:37.956004-05:00",
     "health": 100,
-    "position": { "x": 20, "y": 0, "z": 10 }
-  },
-  {
-    "prefabName": "RockFormation2",
-    "ownerId": 1,
-    "created": "2021-11-25T15:40:37.956005-05:00",
-    "modified": "2021-11-25T15:40:37.956005-05:00",
-    "health": 100,
-    "position": { "x": -100, "y": 0, "z": -50 }
-  },
-  {
-    "prefabName": "RockFormation4",
-    "ownerId": 1,
-    "created": "2021-11-25T15:40:37.956005-05:00",
-    "modified": "2021-11-25T15:40:37.956005-05:00",
-    "health": 100,
-    "position": { "x": 100, "y": 0, "z": -50 }
+    "position": { "x": 275, "y": 0, "z": -80 },
+    "rotation": { "x": 0, "y": 90, "z": 0 }
   },
   {
     "prefabName": "RockFormation1",
@@ -29,23 +23,8 @@
     "created": "2021-11-25T15:40:37.956005-05:00",
     "modified": "2021-11-25T15:40:37.956005-05:00",
     "health": 100,
-    "position": { "x": 20, "y": 0, "z": 200 }
-  },
-  {
-    "prefabName": "RockFormation2",
-    "ownerId": 1,
-    "created": "2021-11-25T15:40:37.956005-05:00",
-    "modified": "2021-11-25T15:40:37.956005-05:00",
-    "health": 100,
-    "position": { "x": -200, "y": 0, "z": -200 }
-  },
-  {
-    "prefabName": "RockFormation3",
-    "ownerId": 1,
-    "created": "2021-11-25T15:40:37.956005-05:00",
-    "modified": "2021-11-25T15:40:37.956005-05:00",
-    "health": 100,
-    "position": { "x": 100, "y": 0, "z": 100 }
+    "position": { "x": 100, "y": 0, "z": -50 },
+    "rotation": { "x": 0, "y": 0, "z": 0 }
   },
   {
     "prefabName": "Ore",
@@ -53,22 +32,7 @@
     "created": "2021-11-25T15:40:37.956005-05:00",
     "modified": "2021-11-25T15:40:37.956005-05:00",
     "health": 100,
-    "position": { "x": 20, "y": 0, "z": 20 }
-  },
-  {
-    "prefabName": "Ore",
-    "ownerId": 1,
-    "created": "2021-11-25T15:40:37.956005-05:00",
-    "modified": "2021-11-25T15:40:37.956005-05:00",
-    "health": 100,
-    "position": { "x": 200, "y": 0, "z": -200 }
-  },
-  {
-    "prefabName": "Ore",
-    "ownerId": 1,
-    "created": "2021-11-25T15:40:37.956005-05:00",
-    "modified": "2021-11-25T15:40:37.956005-05:00",
-    "health": 100,
-    "position": { "x": 100, "y": 0, "z": 100 }
+    "position": { "x": 65, "y": 0, "z": -40 },
+    "rotation": { "x": 0, "y": 0, "z": 0 }
   }
 ]

@@ -9,4 +9,5 @@ type Instance struct {
 	Modified   time.Time `json:"modified"`
 	Health     int       `json:"health"`
 	Position   Vector3   `json:"position"`
+	Rotation   Vector3   `json:"rotation"`
 }
