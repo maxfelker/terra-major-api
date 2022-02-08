@@ -1,11 +1,38 @@
 [
   {
-    "prefabName": "Barrack04B",
+    "prefabName": "Habitat",
     "ownerId": 1,
     "created": "2021-11-25T15:40:37.956004-05:00",
     "modified": "2021-11-25T15:40:37.956004-05:00",
     "health": 100,
-    "position": { "x": 400, "y": 0, "z": -50 },
+    "position": { "x": 300, "y": 0, "z": 0 },
+    "rotation": { "x": 0, "y": 180, "z": 0 }
+  },
+  {
+    "prefabName": "Habitat",
+    "ownerId": 1,
+    "created": "2021-11-25T15:40:37.956004-05:00",
+    "modified": "2021-11-25T15:40:37.956004-05:00",
+    "health": 100,
+    "position": { "x": 300, "y": 0, "z": 25 },
+    "rotation": { "x": 0, "y": 180, "z": 0 }
+  },
+  {
+    "prefabName": "Habitat",
+    "ownerId": 1,
+    "created": "2021-11-25T15:40:37.956004-05:00",
+    "modified": "2021-11-25T15:40:37.956004-05:00",
+    "health": 100,
+    "position": { "x": 300, "y": 0, "z": -25 },
+    "rotation": { "x": 0, "y": 270, "z": 0 }
+  },
+  {
+    "prefabName": "Outpost",
+    "ownerId": 1,
+    "created": "2021-11-25T15:40:37.956004-05:00",
+    "modified": "2021-11-25T15:40:37.956004-05:00",
+    "health": 100,
+    "position": { "x": 250, "y": 0, "z": 0 },
     "rotation": { "x": 0, "y": 0, "z": 0 }
   },
   {
@@ -18,7 +45,16 @@
     "rotation": { "x": 0, "y": 185, "z": 0 }
   },
   {
-    "prefabName": "RockFormation1",
+    "prefabName": "Refinery",
+    "ownerId": 1,
+    "created": "2021-11-25T15:40:37.956004-05:00",
+    "modified": "2021-11-25T15:40:37.956004-05:00",
+    "health": 100,
+    "position": { "x": 150, "y": 0, "z": 10 },
+    "rotation": { "x": 0, "y": 185, "z": 0 }
+  },
+  {
+    "prefabName": "Habitat",
     "ownerId": 1,
     "created": "2021-11-25T15:40:37.956005-05:00",
     "modified": "2021-11-25T15:40:37.956005-05:00",
