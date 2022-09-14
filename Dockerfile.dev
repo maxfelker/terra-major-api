@@ -1,0 +1,9 @@
+FROM golang:alpine  
+WORKDIR /app
+COPY cmd/ cmd/
+COPY pkg/ pkg/
+COPY data/ data/
+COPY go.mod go.mod
+RUN go mod download
+#EXPOSE 8000
+CMD go run cmd/instance-api/main.go

@@ -30,6 +30,8 @@ func RegisterRoutes(routes []Route) {
 
 func Respond(writer http.ResponseWriter, response []byte) {
 	writer.Header().Set("Content-Type", "application/json")
+	writer.Header().Set("Content-Type", "text/html; charset=utf-8")
+	writer.Header().Set("Access-Control-Allow-Origin", "*")
 	writer.Write(response)
 }
 
