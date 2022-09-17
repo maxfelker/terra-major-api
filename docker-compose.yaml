@@ -9,10 +9,14 @@ services:
       - 8000:8000
     volumes:
       - ./:/app
+    environment:
+      - PORT=8000
 
   release:
-    build: .
+    build: 
+      context: .
+      dockerfile: ./Dockerfile
     ports:
       - 80:80
-    volumes:
-      - ./:/app
+    environment:
+      - PORT=80

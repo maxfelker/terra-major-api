@@ -64,7 +64,7 @@ func getEnv(key, fallback string) string {
 }
 
 func main() {
-	var PORT = getEnv("PORT", "8000")
+	var PORT = getEnv("PORT", "80")
 	var routes = server.Routes{
 		{
 			Path:    "/instances",
