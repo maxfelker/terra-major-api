@@ -2,14 +2,15 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 	"time"
 
+	"github.com/gorilla/mux"
 	models "github.com/mw-felker/centerpoint-instance-api/pkg/models"
-	server "github.com/mw-felker/centerpoint-instance-api/pkg/server"
 )
 
 func createInstance(prefabName string, position models.Vector3) models.Instance {
@@ -53,7 +54,14 @@ func getInstancesHandler(writer http.ResponseWriter, request *http.Request) {
 	if e != nil {
 		log.Panic(e)
 	}
-	server.Respond(writer, response)
+
+	//update content type
+	writer.Header().Set("Content-Type", "application/json")
+
+	//specify HTTP status code
+	writer.WriteHeader(http.StatusOK)
+	writer.Write(response)
+
 }
 
 func getEnv(key, fallback string) string {
@@ -63,15 +71,16 @@ func getEnv(key, fallback string) string {
 	return fallback
 }
 
+func registerRoutes(router *mux.Router) {
+	fmt.Println("Registering routes...")
+	router.HandleFunc("/instances", getInstancesHandler).Methods("GET")
+}
+
 func main() {
-	var PORT = getEnv("PORT", "80")
-	var routes = server.Routes{
-		{
-			Path:    "/instances",
-			Method:  "GET",
-			Handler: getInstancesHandler,
-		},
-	}
-	server.RegisterRoutes(routes)
-	server.Start(PORT)
+	var PORT = getEnv("PORT", "8000")
+	router := mux.NewRouter()
+	registerRoutes(router)
+	http.Handle("/", router)
+	fmt.Println("Starting API on port " + PORT)
+	http.ListenAndServe(":"+PORT, router)
 }
