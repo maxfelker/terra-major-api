@@ -6,13 +6,13 @@ import (
 	"log"
 	"net/http"
 
-	models "github.com/mw-felker/centerpoint-instance-api/pkg/characters/models"
+	models "github.com/mw-felker/centerpoint-instance-api/pkg/instances/models"
 	utils "github.com/mw-felker/centerpoint-instance-api/pkg/utils"
 )
 
-func getCharacters() []models.Character {
-	var response []models.Character
-	jsonData, err := ioutil.ReadFile("./pkg/characters/handlers/mock-characters.json")
+func getInstances() []models.Instance {
+	var response []models.Instance
+	jsonData, err := ioutil.ReadFile("./pkg/instances/handlers/instances-mock.json")
 	if err != nil {
 		utils.ErrorHandler(err)
 	}
@@ -24,18 +24,14 @@ func getCharacters() []models.Character {
 	return response
 }
 
-func GetCharactersHandler(writer http.ResponseWriter, request *http.Request) {
-	var characters = getCharacters()
-	response, e := json.Marshal(characters)
+func GetInstances(writer http.ResponseWriter, request *http.Request) {
+	var Instances = getInstances()
+	response, e := json.Marshal(Instances)
 	if e != nil {
 		log.Panic(e)
 	}
 
-	//update content type
 	writer.Header().Set("Content-Type", "application/json")
-
-	//specify HTTP status code
 	writer.WriteHeader(http.StatusOK)
 	writer.Write(response)
-
 }

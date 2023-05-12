@@ -21,18 +21,23 @@ func createCharacter(name string) models.Character {
 	}
 }
 
-func CreateCharacterHandler(writer http.ResponseWriter, request *http.Request) {
-	var newCharacter = createCharacter("random")
+func CreateCharacter(writer http.ResponseWriter, request *http.Request) {
+	decoder := json.NewDecoder(request.Body)
+	var newCharacter models.Character
+	err := decoder.Decode(&newCharacter)
+	//var newCharacter = createCharacter("test")
+	//response, e := json.Marshal(newCharacter)
+	if err != nil {
+		log.Panic(err)
+	}
+
 	response, e := json.Marshal(newCharacter)
+
 	if e != nil {
 		log.Panic(e)
 	}
 
-	//update content type
 	writer.Header().Set("Content-Type", "application/json")
-
-	//specify HTTP status code
 	writer.WriteHeader(http.StatusCreated)
 	writer.Write(response)
-
 }
