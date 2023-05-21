@@ -2,36 +2,32 @@ package handlers
 
 import (
 	"encoding/json"
-	"io/ioutil"
-	"log"
 	"net/http"
 
 	models "github.com/mw-felker/centerpoint-instance-api/pkg/characters/models"
-	utils "github.com/mw-felker/centerpoint-instance-api/pkg/utils"
+	core "github.com/mw-felker/centerpoint-instance-api/pkg/core"
 )
 
-func getCharacters() []models.Character {
-	var response []models.Character
-	jsonData, err := ioutil.ReadFile("./pkg/characters/handlers/mock-characters.json")
-	if err != nil {
-		utils.ErrorHandler(err)
-	}
-	err = json.Unmarshal(jsonData, &response)
-	if err != nil {
-		utils.ErrorHandler(err)
-	}
+func GetCharacters(app *core.App) http.HandlerFunc {
+	return func(writer http.ResponseWriter, request *http.Request) {
 
-	return response
-}
+		var characters []models.Character
+		result := app.DB.Find(&characters)
 
-func GetCharacters(writer http.ResponseWriter, request *http.Request) {
-	var characters = getCharacters()
-	response, e := json.Marshal(characters)
-	if e != nil {
-		log.Panic(e)
+		if result.Error != nil {
+			http.Error(writer, result.Error.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		response, err := json.Marshal(characters)
+
+		if err != nil {
+			http.Error(writer, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		writer.Header().Set("Content-Type", "application/json")
+		writer.WriteHeader(http.StatusOK)
+		writer.Write(response)
 	}
-
-	writer.Header().Set("Content-Type", "application/json")
-	writer.WriteHeader(http.StatusOK)
-	writer.Write(response)
 }
