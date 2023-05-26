@@ -2,40 +2,39 @@ package handlers
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"errors"
 	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
 	models "github.com/mw-felker/centerpoint-instance-api/pkg/characters/models"
-	utils "github.com/mw-felker/centerpoint-instance-api/pkg/utils"
+	"github.com/mw-felker/centerpoint-instance-api/pkg/core"
+	"gorm.io/gorm"
 )
 
-func getCharacter(characterId string) models.Character {
-	log.Println(characterId)
-	var response models.Character
-	jsonData, err := ioutil.ReadFile("./pkg/characters/handlers/mock-characters.json")
-	if err != nil {
-		utils.ErrorHandler(err)
-	}
-	err = json.Unmarshal(jsonData, &response)
-	if err != nil {
-		utils.ErrorHandler(err)
-	}
+func GetCharacterById(app *core.App) http.HandlerFunc {
+	return func(writer http.ResponseWriter, request *http.Request) {
+		vars := mux.Vars(request)
+		characterId := vars["id"]
+		var character models.Character
+		result := app.DB.First(&character, "id = ?", characterId)
 
-	return response
-}
+		if result.Error != nil {
+			if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+				http.Error(writer, "Character not found", http.StatusNotFound)
+			} else {
+				http.Error(writer, result.Error.Error(), http.StatusInternalServerError)
+			}
+			return
+		}
 
-func GetCharacterById(writer http.ResponseWriter, request *http.Request) {
-	vars := mux.Vars(request)
-	characterId := vars["id"]
-	var character = getCharacter(characterId)
-	response, e := json.Marshal(character)
-	if e != nil {
-		log.Panic(e)
+		response, e := json.Marshal(character)
+		if e != nil {
+			log.Panic(e)
+		}
+
+		writer.Header().Set("Content-Type", "application/json")
+		writer.WriteHeader(http.StatusOK)
+		writer.Write(response)
 	}
-
-	writer.Header().Set("Content-Type", "application/json")
-	writer.WriteHeader(http.StatusOK)
-	writer.Write(response)
 }
