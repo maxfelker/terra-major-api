@@ -7,8 +7,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	models "github.com/mw-felker/centerpoint-instance-api/pkg/characters/models"
-	"github.com/mw-felker/centerpoint-instance-api/pkg/core"
+	models "github.com/mw-felker/terra-major-api/pkg/characters/models"
+	"github.com/mw-felker/terra-major-api/pkg/core"
 	"gorm.io/gorm"
 )
 

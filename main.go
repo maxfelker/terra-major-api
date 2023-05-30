@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"net/http"
 
-	handlers "github.com/mw-felker/centerpoint-instance-api/pkg/characters/handlers"
-	"github.com/mw-felker/centerpoint-instance-api/pkg/characters/models"
-	core "github.com/mw-felker/centerpoint-instance-api/pkg/core"
-	utils "github.com/mw-felker/centerpoint-instance-api/pkg/utils"
+	handlers "github.com/mw-felker/terra-major-api/pkg/characters/handlers"
+	"github.com/mw-felker/terra-major-api/pkg/characters/models"
+	core "github.com/mw-felker/terra-major-api/pkg/core"
+	utils "github.com/mw-felker/terra-major-api/pkg/utils"
 )
 
 func seedDb(app *core.App) {

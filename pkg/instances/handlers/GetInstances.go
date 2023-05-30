@@ -6,8 +6,8 @@ import (
 	"log"
 	"net/http"
 
-	models "github.com/mw-felker/centerpoint-instance-api/pkg/instances/models"
-	utils "github.com/mw-felker/centerpoint-instance-api/pkg/utils"
+	models "github.com/mw-felker/terra-major-api/pkg/instances/models"
+	utils "github.com/mw-felker/terra-major-api/pkg/utils"
 )
 
 func getInstances() []models.Instance {
