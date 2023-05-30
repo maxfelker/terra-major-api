@@ -1,8 +1,8 @@
 FROM golang:alpine  
 WORKDIR /app
-COPY cmd/ cmd/
+COPY main.go .
 COPY pkg/ pkg/
-COPY data/ data/
+COPY go.sum go.sum
 COPY go.mod go.mod
 RUN go mod download
-CMD go run cmd/instance-api/main.go
+ENTRYPOINT go run main.go

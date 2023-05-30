@@ -1,22 +1,58 @@
-version: "3.9"  # optional since v1.27.0
+version: "3.9" 
+
+x-db-variables: &db-variables
+  POSTGRES_HOST: postgres
+  POSTGRES_USER: tmdbuser
+  POSTGRES_PASSWORD: bigland
+  POSTGRES_DATABASE: terramajor
+
+networks:
+  local:
+
 services:
 
-  dev:
+  postgres:
+    image: postgres:15.3-alpine
+    restart: always
+    environment:
+      <<: *db-variables
+    hostname: postgres
+    networks:
+      local:
+        aliases:
+          - postgres
+    ports:
+      - 5432:5432
+    volumes: 
+      - ./postgres:/var/lib/postgresql/data
+
+  dev: 
     build: 
       context: .
       dockerfile: ./Dockerfile.dev
+    environment:
+      <<: *db-variables
+      PKG: characters
+      PORT: 8000
+    networks:
+      local:
     ports:
       - 8000:8000
     volumes:
-      - ./:/app
-    environment:
-      - PORT=8000
+      - ./pkg:/app/pkg
 
   release:
     build: 
       context: .
       dockerfile: ./Dockerfile
+    environment:
+      <<: *db-variables
+      PORT: 80
+    networks:
+      local:
     ports:
       - 80:80
-    environment:
-      - PORT=80
+
+volumes:
+  postgres:
+    driver: local
