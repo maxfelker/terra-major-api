@@ -3,26 +3,27 @@ Instance API
 
 Persistence cloud API to store locations of objects in Unity 3D space
 
-To run the API:
+To run the API locally,
 
 ```bash
-go run cmd/instance-api/main.go
+docker compose up --build dev
 ```
 
 This will run the API locally on [http://localhost:8000](http://localhost:8000). The available endpoints are currently:
 
 ```
+GET /characters
+POST /characters
+PATCH /characters/{id}
+DELETE /characters/{id}
+
 GET /instances
 ```
 
-To build the binary:
+To build the release:
 
 ```bash
-go build -o bin/instance-api cmd/instance-api/main.go
+docker compose up --build release
 ```
 
-Then run it
-
-```bash
-./bin/instance-api
-```
+This will run the API locally on [http://localhost](http://localhost). 

@@ -25,43 +25,33 @@ services:
       - 5432:5432
     volumes: 
       - ./postgres:/var/lib/postgresql/data
-      - ./pkg/core/sql:/docker-entrypoint-initdb.d
 
-  dev: &dev
+  dev: 
     build: 
       context: .
       dockerfile: ./Dockerfile.dev
-    networks:
-      local:
-    volumes:
-      - ./pkg:/app/pkg
-
-  characters:
-    <<: *dev
-    ports:
-      - 8001:8001
     environment:
       <<: *db-variables
       PKG: characters
-      PORT: 8001
-
-  instances:
-    <<: *dev
+      PORT: 8000
+    networks:
+      local:
     ports:
-      - 8002:8002
-    environment:
-      <<: *db-variables
-      PKG: instances
-      PORT: 8002
+      - 8000:8000
+    volumes:
+      - ./pkg:/app/pkg
 
   release:
     build: 
       context: .
       dockerfile: ./Dockerfile
+    environment:
+      <<: *db-variables
+      PORT: 80
+    networks:
+      local:
     ports:
       - 80:80
-    environment:
-      PORT: 80
 
 volumes:
   postgres:
