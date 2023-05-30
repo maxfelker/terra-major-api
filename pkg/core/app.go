@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gorilla/mux"
-	"github.com/mw-felker/centerpoint-instance-api/pkg/utils"
+	"github.com/mw-felker/terra-major-api/pkg/utils"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )

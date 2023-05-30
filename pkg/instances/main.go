@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	handlers "github.com/mw-felker/centerpoint-instance-api/pkg/instances/handlers"
-	"github.com/mw-felker/centerpoint-instance-api/pkg/utils"
+	handlers "github.com/mw-felker/terra-major-api/pkg/instances/handlers"
+	"github.com/mw-felker/terra-major-api/pkg/utils"
 )
 
 func main() {

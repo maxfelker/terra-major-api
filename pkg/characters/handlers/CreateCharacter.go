@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	models "github.com/mw-felker/centerpoint-instance-api/pkg/characters/models"
-	"github.com/mw-felker/centerpoint-instance-api/pkg/core"
+	models "github.com/mw-felker/terra-major-api/pkg/characters/models"
+	"github.com/mw-felker/terra-major-api/pkg/core"
 )
 
 func CreateCharacter(app *core.App) http.HandlerFunc {
