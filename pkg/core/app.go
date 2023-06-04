@@ -19,12 +19,24 @@ func generateDsn() string {
 	var POSTGRES_PORT = utils.GetEnv("POSTGRES_PORT", "5432")
 	var POSTGRES_PASSWORD = utils.GetEnv("POSTGRES_PASSWORD", "postgres")
 	var POSTGRES_USER = utils.GetEnv("POSTGRES_USER", "postgres")
-	var POSTGRES_DATABASE = utils.GetEnv("POSTGRES_DATABASE", "terramajor")
-	return "host=" + POSTGRES_HOST + " user=" + POSTGRES_USER + " password=" + POSTGRES_PASSWORD + " port=" + POSTGRES_PORT + " database=" + POSTGRES_DATABASE + " sslmode=disable TimeZone=America/New_York"
+	return "host=" + POSTGRES_HOST + " user=" + POSTGRES_USER + " password=" + POSTGRES_PASSWORD + " port=" + POSTGRES_PORT + " sslmode=disable TimeZone=America/New_York"
 }
 
-func createDbClient() *gorm.DB {
-	dsn := generateDsn()
+func generateDatabaseDsn(dbName string) string {
+	return generateDsn() + " dbname=" + dbName
+}
+
+func checkDbExistsAndCreate(db *gorm.DB, dbName string) {
+	var count int
+	db.Raw("SELECT COUNT(*) FROM pg_database WHERE datname = ?", dbName).Scan(&count)
+	if count == 0 {
+		fmt.Printf("Database does not exist. Creating.......")
+		db.Exec("CREATE DATABASE " + dbName)
+	}
+}
+
+func connectToDb(dbName string) *gorm.DB {
+	dsn := generateDatabaseDsn(dbName)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		utils.ErrorHandler(err)
@@ -32,18 +44,13 @@ func createDbClient() *gorm.DB {
 	return db
 }
 
-func seedDb(app *App) {
-	fmt.Printf("Running initial database setup.......")
-	app.DB.Exec("DROP DATABASE IF EXISTS terramajor")
-	app.DB.Exec("CREATE DATABASE terramajor")
-}
-
-// Creates a new App instance and connects to db
 func CreateApp() *App {
-	app := &App{
-		DB:     createDbClient(),
+	var dbConnection = connectToDb("postgres")
+	var POSTGRES_DATABASE = utils.GetEnv("POSTGRES_DATABASE", "terramajor")
+	checkDbExistsAndCreate(dbConnection, POSTGRES_DATABASE)
+
+	return &App{
+		DB:     connectToDb(POSTGRES_DATABASE),
 		Router: mux.NewRouter(),
 	}
-	//seedDb(app)
-	return app
 }
