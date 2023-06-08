@@ -1,4 +1,4 @@
-package amodels
+package models
 
 type Vector3 struct {
 	X float32 `json:"x"`

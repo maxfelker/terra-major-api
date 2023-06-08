@@ -6,7 +6,7 @@ import (
 	"log"
 	"net/http"
 
-	models "github.com/mw-felker/terra-major-api/pkg/instances/models"
+	models "github.com/mw-felker/terra-major-api/pkg/sandboxes/models"
 	utils "github.com/mw-felker/terra-major-api/pkg/utils"
 )
 
