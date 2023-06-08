@@ -15,7 +15,7 @@ func CreateInstance(app *core.App) http.HandlerFunc {
 		sandboxId := vars["sandboxId"]
 
 		if sandboxId == "" {
-			http.Error(writer, "sandboxId not found", http.StatusNotFound)
+			http.Error(writer, "Sandbox not found", http.StatusNotFound)
 			return
 		}
 
@@ -48,7 +48,7 @@ func CreateInstance(app *core.App) http.HandlerFunc {
 			return
 		}
 
-		if newInstance.Health < 1 {
+		if *newInstance.Health < 1 {
 			http.Error(writer, "Healh must be greater than 0", http.StatusBadRequest)
 			return
 		}
