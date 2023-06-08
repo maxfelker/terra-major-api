@@ -31,7 +31,9 @@ func main() {
 	app.Router.HandleFunc("/characters", characters.CreateCharacter(app)).Methods("POST")
 	app.Router.HandleFunc("/characters/{id}", characters.UpdateCharacter(app)).Methods("PATCH")
 	app.Router.HandleFunc("/characters/{id}", characters.ArchiveCharacter(app)).Methods("DELETE")
+
 	app.Router.HandleFunc("/sandboxes", sandboxes.GetSandboxes(app)).Methods("GET")
+	app.Router.HandleFunc("/sandboxes", sandboxes.CreateSandbox(app)).Methods("POST")
 
 	corsObj := handlers.CORS(handlers.AllowedMethods([]string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"}),
 		handlers.AllowedOrigins([]string{"*"}),
