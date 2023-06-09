@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 
 	"github.com/mw-felker/terra-major-api/pkg/core"
 	models "github.com/mw-felker/terra-major-api/pkg/sandboxes/models"
@@ -25,7 +26,11 @@ func CreateSandbox(app *core.App) http.HandlerFunc {
 
 		result := app.DB.Create(&newSandbox)
 		if result.Error != nil {
-			http.Error(writer, result.Error.Error(), http.StatusInternalServerError)
+			if strings.Contains(result.Error.Error(), "23505") {
+				http.Error(writer, "A sandbox for this characterId already exists", http.StatusConflict)
+			} else {
+				http.Error(writer, result.Error.Error(), http.StatusInternalServerError)
+			}
 			return
 		}
 

@@ -36,6 +36,8 @@ func main() {
 	// Sandboxes
 	app.Router.HandleFunc("/sandboxes", sandboxes.GetSandboxes(app)).Methods("GET")
 	app.Router.HandleFunc("/sandboxes", sandboxes.CreateSandbox(app)).Methods("POST")
+	app.Router.HandleFunc("/sandboxes/{id}", sandboxes.GetSandboxById(app)).Methods("GET")
+	app.Router.HandleFunc("/sandboxes/{id}", sandboxes.ArchiveSandbox(app)).Methods("DELETE")
 
 	// Instances
 	app.Router.HandleFunc("/sandboxes/{sandboxId}/instances", sandboxes.GetInstancesBySandboxId(app)).Methods("GET")
