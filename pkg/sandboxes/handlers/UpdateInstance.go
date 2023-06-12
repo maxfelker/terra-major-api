@@ -42,20 +42,6 @@ func UpdateInstance(app *core.App) http.HandlerFunc {
 			return
 		}
 
-		if updatedInstance.PrefabName != "" {
-			http.Error(writer, "Cannot change prefabName", http.StatusBadRequest)
-			return
-		}
-
-		if updatedInstance.Health != nil {
-			if *updatedInstance.Health < 1 {
-				http.Error(writer, "Health must be greater than 0", http.StatusBadRequest)
-				return
-			} else {
-				existingInstance.Health = updatedInstance.Health
-			}
-		}
-
 		if updatedInstance.Position.X != nil && updatedInstance.Position.Y != nil && updatedInstance.Position.Z != nil {
 			existingInstance.Position = updatedInstance.Position
 		} else if updatedInstance.Position.X != nil || updatedInstance.Position.Y != nil || updatedInstance.Position.Z != nil {
@@ -68,6 +54,10 @@ func UpdateInstance(app *core.App) http.HandlerFunc {
 		} else if updatedInstance.Rotation.X != nil || updatedInstance.Rotation.Y != nil || updatedInstance.Rotation.Z != nil {
 			http.Error(writer, "All rotation fields (x, y, z) are required", http.StatusBadRequest)
 			return
+		}
+
+		if updatedInstance.PrefabName != "" {
+			existingInstance.PrefabName = updatedInstance.PrefabName
 		}
 
 		result := app.DB.Save(&existingInstance)

@@ -44,7 +44,7 @@ func main() {
 	app.Router.HandleFunc("/sandboxes/{sandboxId}/instances/{instanceId}", sandboxes.GetInstanceById(app)).Methods("GET")
 	app.Router.HandleFunc("/sandboxes/{sandboxId}/instances", sandboxes.CreateInstance(app)).Methods("POST")
 	app.Router.HandleFunc("/sandboxes/{sandboxId}/instances/{instanceId}", sandboxes.UpdateInstance(app)).Methods("PATCH")
-	//app.Router.HandleFunc("/sandboxes/{sandboxId}/instances/{instanceId}", sandboxes.ArchiveInstance(app)).Methods("DELETE")
+	app.Router.HandleFunc("/sandboxes/{sandboxId}/instances/{instanceId}", sandboxes.ArchiveInstance(app)).Methods("DELETE")
 
 	corsObj := handlers.CORS(handlers.AllowedMethods([]string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"}),
 		handlers.AllowedOrigins([]string{"*"}),

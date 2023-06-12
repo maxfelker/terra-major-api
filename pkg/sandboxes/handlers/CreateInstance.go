@@ -48,11 +48,6 @@ func CreateInstance(app *core.App) http.HandlerFunc {
 			return
 		}
 
-		if *newInstance.Health < 1 {
-			http.Error(writer, "Healh must be greater than 0", http.StatusBadRequest)
-			return
-		}
-
 		result := app.DB.Create(&newInstance)
 		if result.Error != nil {
 			http.Error(writer, result.Error.Error(), http.StatusInternalServerError)
