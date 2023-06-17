@@ -30,12 +30,16 @@ func checkDbExistsAndCreate(db *gorm.DB, dbName string) {
 	var count int
 	db.Raw("SELECT COUNT(*) FROM pg_database WHERE datname = ?", dbName).Scan(&count)
 	if count == 0 {
-		fmt.Printf("Database does not exist. Creating.......")
+		fmt.Println("Database " + dbName + " does not exist, creating database...")
 		db.Exec("CREATE DATABASE " + dbName)
+	} else {
+		fmt.Println("Database " + dbName + " exists, skipping.")
 	}
+
 }
 
 func connectToDb(dbName string) *gorm.DB {
+	fmt.Println("Connecting to database: " + dbName)
 	dsn := generateDatabaseDsn(dbName)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
@@ -45,6 +49,7 @@ func connectToDb(dbName string) *gorm.DB {
 }
 
 func CreateApp() *App {
+	fmt.Println("Starting up app...")
 	var dbConnection = connectToDb("postgres")
 	var POSTGRES_DATABASE = utils.GetEnv("POSTGRES_DATABASE", "terramajor")
 	checkDbExistsAndCreate(dbConnection, POSTGRES_DATABASE)
