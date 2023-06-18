@@ -6,6 +6,8 @@ import (
 
 	"github.com/gorilla/handlers"
 
+	accounts "github.com/mw-felker/terra-major-api/pkg/accounts/handlers"
+	accountModels "github.com/mw-felker/terra-major-api/pkg/accounts/models"
 	characters "github.com/mw-felker/terra-major-api/pkg/characters/handlers"
 	characterModels "github.com/mw-felker/terra-major-api/pkg/characters/models"
 	core "github.com/mw-felker/terra-major-api/pkg/core"
@@ -16,6 +18,7 @@ import (
 
 func seedDb(app *core.App) {
 	fmt.Println("Seeding app database...")
+	app.DB.AutoMigrate(&accountModels.Account{})
 	app.DB.AutoMigrate(&characterModels.Character{})
 	app.DB.AutoMigrate(&sandboxModels.Sandbox{})
 	app.DB.AutoMigrate(&sandboxModels.Instance{})
@@ -25,6 +28,10 @@ func main() {
 	var PORT = utils.GetEnv("PORT", "8000")
 	app := core.CreateApp()
 	seedDb(app)
+
+	app.Router.HandleFunc("/accounts", accounts.CreateAccount(app)).Methods("POST")
+	app.Router.HandleFunc("/accounts/{id}", accounts.GetAccountById(app)).Methods("GET")
+	//app.Router.HandleFunc("/accounts/{id}", accounts.UpdateAccount(app)).Methods("PATCH")
 
 	// Characters
 	app.Router.HandleFunc("/characters", characters.GetCharacters(app)).Methods("GET")
