@@ -41,7 +41,7 @@ func (account *Account) BeforeCreate(tx *gorm.DB) (err error) {
 }
 
 func (account *Account) BeforeSave(tx *gorm.DB) (err error) {
-	if len(account.Password) > 0 && tx.Statement.Changed("Password") {
+	if len(account.Password) > 0 {
 		var hash = generatePassword(account.Password)
 		tx.Statement.SetColumn("Password", hash)
 	}

@@ -31,7 +31,7 @@ func main() {
 
 	app.Router.HandleFunc("/accounts", accounts.CreateAccount(app)).Methods("POST")
 	app.Router.HandleFunc("/accounts/{id}", accounts.GetAccountById(app)).Methods("GET")
-	//app.Router.HandleFunc("/accounts/{id}", accounts.UpdateAccount(app)).Methods("PATCH")
+	app.Router.HandleFunc("/accounts/{id}", accounts.UpdateAccount(app)).Methods("PATCH")
 
 	// Characters
 	app.Router.HandleFunc("/characters", characters.GetCharacters(app)).Methods("GET")
