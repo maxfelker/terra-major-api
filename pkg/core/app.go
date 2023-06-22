@@ -19,7 +19,8 @@ func generateDsn() string {
 	var POSTGRES_PORT = utils.GetEnv("POSTGRES_PORT", "5432")
 	var POSTGRES_PASSWORD = utils.GetEnv("POSTGRES_PASSWORD", "postgres")
 	var POSTGRES_USER = utils.GetEnv("POSTGRES_USER", "postgres")
-	return "host=" + POSTGRES_HOST + " user=" + POSTGRES_USER + " password=" + POSTGRES_PASSWORD + " port=" + POSTGRES_PORT + " sslmode=require TimeZone=America/New_York"
+	var POSTGRES_SSL = utils.GetEnv("POSTGRES_SSL", "require")
+	return "host=" + POSTGRES_HOST + " user=" + POSTGRES_USER + " password=" + POSTGRES_PASSWORD + " port=" + POSTGRES_PORT + " sslmode=" + POSTGRES_SSL + " TimeZone=America/New_York"
 }
 
 func generateDatabaseDsn(dbName string) string {
