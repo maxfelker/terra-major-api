@@ -8,6 +8,7 @@ import (
 	"github.com/gorilla/mux"
 	models "github.com/mw-felker/terra-major-api/pkg/accounts/models"
 	"github.com/mw-felker/terra-major-api/pkg/core"
+	utils "github.com/mw-felker/terra-major-api/pkg/utils"
 	"gorm.io/gorm"
 )
 
@@ -20,16 +21,16 @@ func GetAccountById(app *core.App) http.HandlerFunc {
 
 		if result.Error != nil {
 			if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-				http.Error(writer, "Account not found", http.StatusNotFound)
+				utils.ReturnError(writer, "Account not found", http.StatusNotFound)
 			} else {
-				http.Error(writer, result.Error.Error(), http.StatusInternalServerError)
+				utils.ReturnError(writer, result.Error.Error(), http.StatusInternalServerError)
 			}
 			return
 		}
 
 		response, e := json.Marshal(models.AccountResponse{BaseAccount: account.BaseAccount})
 		if e != nil {
-			http.Error(writer, e.Error(), http.StatusInternalServerError)
+			utils.ReturnError(writer, e.Error(), http.StatusInternalServerError)
 			return
 		}
 

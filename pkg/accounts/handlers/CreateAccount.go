@@ -9,6 +9,7 @@ import (
 
 	models "github.com/mw-felker/terra-major-api/pkg/accounts/models"
 	"github.com/mw-felker/terra-major-api/pkg/core"
+	"github.com/mw-felker/terra-major-api/pkg/utils"
 )
 
 func validatePasswordRequirements(password string) bool {
@@ -24,44 +25,44 @@ func CreateAccount(app *core.App) http.HandlerFunc {
 		var newAccount models.Account
 		err := decoder.Decode(&newAccount)
 		if err != nil {
-			http.Error(writer, err.Error(), http.StatusBadRequest)
+			utils.ReturnError(writer, err.Error())
 			return
 		}
 
 		if newAccount.Email == "" {
-			http.Error(writer, "Email is required", http.StatusBadRequest)
+			utils.ReturnError(writer, "Email is required")
 			return
 		}
 
 		_, err = mail.ParseAddress(newAccount.Email)
 		if err != nil {
-			http.Error(writer, "Invalid email format", http.StatusBadRequest)
+			utils.ReturnError(writer, "Invalid email format")
 			return
 		}
 
 		if newAccount.Password == "" {
-			http.Error(writer, "Password is required", http.StatusBadRequest)
+			utils.ReturnError(writer, "Password is required")
 			return
 		}
 
 		if !validatePasswordRequirements(newAccount.Password) {
-			http.Error(writer, "Password must be at least 8 characters long, contain at least one number, one uppercase letter, and one special character", http.StatusBadRequest)
+			utils.ReturnError(writer, "Password must be at least 8 characters long, contain at least one number, one uppercase letter, and one special character")
 			return
 		}
 
 		result := app.DB.Create(&newAccount)
 		if result.Error != nil {
 			if strings.Contains(result.Error.Error(), "23505") {
-				http.Error(writer, "An account with this email already exists", http.StatusConflict)
+				utils.ReturnError(writer, "An account with this email already exists", http.StatusConflict)
 			} else {
-				http.Error(writer, result.Error.Error(), http.StatusInternalServerError)
+				utils.ReturnError(writer, result.Error.Error(), http.StatusInternalServerError)
 			}
 			return
 		}
 
 		response, e := json.Marshal(models.AccountResponse{BaseAccount: newAccount.BaseAccount})
 		if e != nil {
-			http.Error(writer, e.Error(), http.StatusInternalServerError)
+			utils.ReturnError(writer, e.Error(), http.StatusInternalServerError)
 			return
 		}
 

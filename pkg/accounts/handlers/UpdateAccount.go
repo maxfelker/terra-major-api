@@ -10,6 +10,7 @@ import (
 	"github.com/gorilla/mux"
 	models "github.com/mw-felker/terra-major-api/pkg/accounts/models"
 	"github.com/mw-felker/terra-major-api/pkg/core"
+	utils "github.com/mw-felker/terra-major-api/pkg/utils"
 	"gorm.io/gorm"
 )
 
@@ -22,7 +23,7 @@ func UpdateAccount(app *core.App) http.HandlerFunc {
 		decoder := json.NewDecoder(request.Body)
 		err := decoder.Decode(&updatedAccount)
 		if err != nil {
-			http.Error(writer, err.Error(), http.StatusBadRequest)
+			utils.ReturnError(writer, err.Error())
 			return
 		}
 
@@ -30,9 +31,9 @@ func UpdateAccount(app *core.App) http.HandlerFunc {
 		findResult := app.DB.First(&existingAccount, "id = ?", accountId)
 		if findResult.Error != nil {
 			if errors.Is(findResult.Error, gorm.ErrRecordNotFound) {
-				http.Error(writer, "Account not found", http.StatusNotFound)
+				utils.ReturnError(writer, "Account not found", http.StatusNotFound)
 			} else {
-				http.Error(writer, findResult.Error.Error(), http.StatusInternalServerError)
+				utils.ReturnError(writer, findResult.Error.Error(), http.StatusInternalServerError)
 			}
 			return
 		}
@@ -40,7 +41,7 @@ func UpdateAccount(app *core.App) http.HandlerFunc {
 		if updatedAccount.Email != "" {
 			_, err := mail.ParseAddress(updatedAccount.Email)
 			if err != nil {
-				http.Error(writer, "Invalid email format", http.StatusBadRequest)
+				utils.ReturnError(writer, "Invalid email format")
 				return
 			}
 			existingAccount.Email = updatedAccount.Email
@@ -48,7 +49,7 @@ func UpdateAccount(app *core.App) http.HandlerFunc {
 
 		if updatedAccount.Password != "" {
 			if !validatePasswordRequirements(updatedAccount.Password) {
-				http.Error(writer, "Password must be at least 8 characters long, contain at least one number, one uppercase letter, and one special character", http.StatusBadRequest)
+				utils.ReturnError(writer, "Password must be at least 8 characters long, contain at least one number, one uppercase letter, and one special character")
 				return
 			}
 			existingAccount.Password = updatedAccount.Password
@@ -57,16 +58,16 @@ func UpdateAccount(app *core.App) http.HandlerFunc {
 		result := app.DB.Save(&existingAccount)
 		if result.Error != nil {
 			if strings.Contains(result.Error.Error(), "23505") {
-				http.Error(writer, "An account with this email already exists", http.StatusConflict)
+				utils.ReturnError(writer, "An account with this email already exists", http.StatusConflict)
 			} else {
-				http.Error(writer, result.Error.Error(), http.StatusInternalServerError)
+				utils.ReturnError(writer, result.Error.Error(), http.StatusInternalServerError)
 			}
 			return
 		}
 
 		response, e := json.Marshal(models.AccountResponse{BaseAccount: existingAccount.BaseAccount})
 		if e != nil {
-			http.Error(writer, e.Error(), http.StatusInternalServerError)
+			utils.ReturnError(writer, e.Error(), http.StatusInternalServerError)
 			return
 		}
 
