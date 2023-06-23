@@ -1,6 +1,8 @@
 package models
 
 import (
+	"fmt"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -25,7 +27,8 @@ type AccountResponse struct {
 }
 
 func generatePassword(passwordText string) string {
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(passwordText), bcrypt.DefaultCost)
+	passwordBytes := []byte(strings.TrimSpace(passwordText))
+	hashedPassword, err := bcrypt.GenerateFromPassword(passwordBytes, bcrypt.DefaultCost)
 	if err != nil {
 		panic(err)
 	}
@@ -34,16 +37,16 @@ func generatePassword(passwordText string) string {
 
 func (account *Account) BeforeCreate(tx *gorm.DB) (err error) {
 	account.ID = uuid.New().String()
-	if len(account.Password) > 0 {
-		account.Password = generatePassword(account.Password)
-	}
+	account.Email = strings.TrimSpace(account.Email)
+	account.Password = generatePassword(account.Password)
 	return
 }
 
-func (account *Account) BeforeSave(tx *gorm.DB) (err error) {
-	if len(account.Password) > 0 {
-		var hash = generatePassword(account.Password)
-		tx.Statement.SetColumn("Password", hash)
+func (account *Account) BeforeUpdate(tx *gorm.DB) (err error) {
+	fmt.Println("Saving account")
+	if tx.Statement.Changed("Password") {
+		fmt.Println("Password change " + account.Password)
+		account.Password = generatePassword(account.Password)
 	}
 	return
 }
