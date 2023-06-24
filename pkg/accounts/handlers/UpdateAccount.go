@@ -38,15 +38,13 @@ func UpdateAccount(app *core.App) http.HandlerFunc {
 			return
 		}
 
-		updatedFields := make(map[string]interface{})
-
 		if updatedAccount.Email != "" {
 			_, err := mail.ParseAddress(updatedAccount.Email)
 			if err != nil {
 				utils.ReturnError(writer, "Invalid email format")
 				return
 			}
-			updatedFields["Email"] = updatedAccount.Email
+			existingAccount.Email = updatedAccount.Email
 		}
 
 		if updatedAccount.Password != "" {
@@ -54,10 +52,10 @@ func UpdateAccount(app *core.App) http.HandlerFunc {
 				utils.ReturnError(writer, "Password must be at least 8 characters long, contain at least one number, one uppercase letter, and one special character")
 				return
 			}
-			updatedFields["Password"] = updatedAccount.Password
+			existingAccount.Password = models.GeneratePassword(updatedAccount.Password)
 		}
 
-		result := app.DB.Model(&existingAccount).Updates(updatedFields)
+		result := app.DB.Save(&existingAccount)
 		if result.Error != nil {
 			if strings.Contains(result.Error.Error(), "23505") {
 				utils.ReturnError(writer, "An account with this email already exists", http.StatusConflict)

@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/mail"
 	"strings"
@@ -49,7 +48,6 @@ func Login(app *core.App) http.HandlerFunc {
 		passInDb := []byte(accountInDB.Password)
 		mismatched := bcrypt.CompareHashAndPassword(passInDb, userPass)
 		if mismatched != nil {
-			fmt.Println(mismatched.Error())
 			utils.ReturnError(writer, "Incorrect password", http.StatusUnauthorized)
 			return
 		}

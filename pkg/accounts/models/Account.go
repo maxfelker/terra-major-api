@@ -1,7 +1,6 @@
 package models
 
 import (
-	"fmt"
 	"strings"
 	"time"
 
@@ -26,7 +25,7 @@ type AccountResponse struct {
 	BaseAccount
 }
 
-func generatePassword(passwordText string) string {
+func GeneratePassword(passwordText string) string {
 	passwordBytes := []byte(strings.TrimSpace(passwordText))
 	hashedPassword, err := bcrypt.GenerateFromPassword(passwordBytes, bcrypt.DefaultCost)
 	if err != nil {
@@ -38,15 +37,6 @@ func generatePassword(passwordText string) string {
 func (account *Account) BeforeCreate(tx *gorm.DB) (err error) {
 	account.ID = uuid.New().String()
 	account.Email = strings.TrimSpace(account.Email)
-	account.Password = generatePassword(account.Password)
-	return
-}
-
-func (account *Account) BeforeUpdate(tx *gorm.DB) (err error) {
-	fmt.Println("Saving account")
-	if tx.Statement.Changed("Password") {
-		fmt.Println("Password change " + account.Password)
-		account.Password = generatePassword(account.Password)
-	}
+	account.Password = GeneratePassword(account.Password)
 	return
 }
