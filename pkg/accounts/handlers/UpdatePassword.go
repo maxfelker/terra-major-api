@@ -42,21 +42,30 @@ func UpdatePassword(app *core.App) http.HandlerFunc {
 			return
 		}
 
-		if passwordUpdate.CurrentPassword != "" && passwordUpdate.NewPassword != "" {
-			err := bcrypt.CompareHashAndPassword([]byte(existingAccount.Password), []byte(passwordUpdate.CurrentPassword))
-			if err != nil {
-				utils.ReturnError(writer, "Current password is incorrect", http.StatusUnauthorized)
-				return
-			}
-
-			if !validatePasswordRequirements(passwordUpdate.NewPassword) {
-				utils.ReturnError(writer, "New password must be at least 8 characters long, contain at least one number, one uppercase letter, and one special character")
-				return
-			}
-			existingAccount.Password = models.GeneratePassword(passwordUpdate.NewPassword)
+		if passwordUpdate.CurrentPassword == "" {
+			utils.ReturnError(writer, "currentPassword is required")
+			return
 		}
 
+		mismatched := bcrypt.CompareHashAndPassword([]byte(existingAccount.Password), []byte(passwordUpdate.CurrentPassword))
+		if mismatched != nil {
+			utils.ReturnError(writer, "currentPassword is incorrect", http.StatusUnauthorized)
+			return
+		}
+
+		if passwordUpdate.NewPassword == "" {
+			utils.ReturnError(writer, "newPassword is required")
+			return
+		}
+
+		if !validatePasswordRequirements(passwordUpdate.NewPassword) {
+			utils.ReturnError(writer, "newPassword must be at least 8 characters long, contain at least one number, one uppercase letter, and one special character")
+			return
+		}
+
+		existingAccount.Password = models.GeneratePassword(passwordUpdate.NewPassword)
 		result := app.DB.Save(&existingAccount)
+
 		if result.Error != nil {
 			utils.ReturnError(writer, result.Error.Error(), http.StatusInternalServerError)
 			return
