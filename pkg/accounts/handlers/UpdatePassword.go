@@ -4,24 +4,28 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
-	"net/mail"
-	"strings"
 
 	"github.com/gorilla/mux"
 	models "github.com/mw-felker/terra-major-api/pkg/accounts/models"
 	"github.com/mw-felker/terra-major-api/pkg/core"
 	utils "github.com/mw-felker/terra-major-api/pkg/utils"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
-func UpdateAccount(app *core.App) http.HandlerFunc {
+type PasswordUpdate struct {
+	CurrentPassword string `json:"currentPassword"`
+	NewPassword     string `json:"newPassword"`
+}
+
+func UpdatePassword(app *core.App) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		vars := mux.Vars(request)
 		accountId := vars["id"]
 
-		var updatedAccount models.Account
+		var passwordUpdate PasswordUpdate
 		decoder := json.NewDecoder(request.Body)
-		err := decoder.Decode(&updatedAccount)
+		err := decoder.Decode(&passwordUpdate)
 		if err != nil {
 			utils.ReturnError(writer, err.Error())
 			return
@@ -38,33 +42,27 @@ func UpdateAccount(app *core.App) http.HandlerFunc {
 			return
 		}
 
-		if updatedAccount.Email != "" {
-			_, err := mail.ParseAddress(updatedAccount.Email)
+		if passwordUpdate.CurrentPassword != "" && passwordUpdate.NewPassword != "" {
+			err := bcrypt.CompareHashAndPassword([]byte(existingAccount.Password), []byte(passwordUpdate.CurrentPassword))
 			if err != nil {
-				utils.ReturnError(writer, "Invalid email format")
+				utils.ReturnError(writer, "Current password is incorrect", http.StatusUnauthorized)
 				return
 			}
-			existingAccount.Email = updatedAccount.Email
+
+			if !validatePasswordRequirements(passwordUpdate.NewPassword) {
+				utils.ReturnError(writer, "New password must be at least 8 characters long, contain at least one number, one uppercase letter, and one special character")
+				return
+			}
+			existingAccount.Password = models.GeneratePassword(passwordUpdate.NewPassword)
 		}
 
 		result := app.DB.Save(&existingAccount)
 		if result.Error != nil {
-			if strings.Contains(result.Error.Error(), "23505") {
-				utils.ReturnError(writer, "An account with this email already exists", http.StatusConflict)
-			} else {
-				utils.ReturnError(writer, result.Error.Error(), http.StatusInternalServerError)
-			}
-			return
-		}
-
-		response, e := json.Marshal(models.AccountResponse{BaseAccount: existingAccount.BaseAccount})
-		if e != nil {
-			utils.ReturnError(writer, e.Error(), http.StatusInternalServerError)
+			utils.ReturnError(writer, result.Error.Error(), http.StatusInternalServerError)
 			return
 		}
 
 		writer.Header().Set("Content-Type", "application/json")
 		writer.WriteHeader(http.StatusOK)
-		writer.Write(response)
 	}
 }
