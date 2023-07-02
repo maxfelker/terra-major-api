@@ -5,4 +5,5 @@ COPY pkg/ pkg/
 COPY go.sum go.sum
 COPY go.mod go.mod
 RUN go mod download
+RUN go run pkg/client/generatePem/main.go
 ENTRYPOINT go run main.go
