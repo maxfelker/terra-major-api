@@ -10,6 +10,7 @@ import (
 	accountModels "github.com/mw-felker/terra-major-api/pkg/accounts/models"
 	characters "github.com/mw-felker/terra-major-api/pkg/characters/handlers"
 	characterModels "github.com/mw-felker/terra-major-api/pkg/characters/models"
+	client "github.com/mw-felker/terra-major-api/pkg/client/handlers"
 	core "github.com/mw-felker/terra-major-api/pkg/core"
 	sandboxes "github.com/mw-felker/terra-major-api/pkg/sandboxes/handlers"
 	sandboxModels "github.com/mw-felker/terra-major-api/pkg/sandboxes/models"
@@ -35,6 +36,8 @@ func main() {
 	app.Router.HandleFunc("/accounts/{id}/update-password", accounts.UpdatePassword(app)).Methods("PATCH")
 
 	app.Router.HandleFunc("/login", accounts.Login(app)).Methods("POST")
+
+	app.Router.HandleFunc("/tokens", client.CreateUnityClientToken(app)).Methods("POST")
 
 	// Characters
 	app.Router.HandleFunc("/characters", characters.GetCharacters(app)).Methods("GET")

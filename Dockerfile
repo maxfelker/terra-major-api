@@ -6,10 +6,13 @@ COPY pkg/ pkg/
 COPY go.mod go.mod
 COPY go.sum go.sum
 RUN go mod download
+RUN mkdir keys/
+RUN go run pkg/client/generatePem/main.go /app/keys/unity-client.pem
 RUN GOOS=linux GOARCH=amd64 CGO_ENABLED=1 go build -o bin/terra-major-api main.go
 
-FROM alpine:latest  
+FROM alpine:latest as release  
 RUN apk --no-cache add ca-certificates
 WORKDIR /app
 COPY --from=build /app/bin ./bin
+COPY --from=build /app/keys ./keys
 ENTRYPOINT ./bin/terra-major-api
