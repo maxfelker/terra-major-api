@@ -45,7 +45,7 @@ func generateClaim(accountId string, sandboxId string, characterId string) *Clai
 }
 
 func loadPrivateKey() *rsa.PrivateKey {
-	privateKeyFile := "./unity-client.pem"
+	privateKeyFile := "./keys/unity-client.pem"
 	privateKeyBytes, err := ioutil.ReadFile(privateKeyFile)
 	if err != nil {
 		fmt.Println("Error reading private key: ", err)

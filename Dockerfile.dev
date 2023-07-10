@@ -5,5 +5,6 @@ COPY pkg/ pkg/
 COPY go.sum go.sum
 COPY go.mod go.mod
 RUN go mod download
-RUN go run pkg/client/generatePem/main.go
+RUN mkdir keys/
+RUN go run pkg/client/generatePem/main.go /app/keys/unity-client.pem
 ENTRYPOINT go run main.go
