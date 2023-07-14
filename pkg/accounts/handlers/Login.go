@@ -7,10 +7,15 @@ import (
 	"strings"
 
 	models "github.com/mw-felker/terra-major-api/pkg/accounts/models"
+	webAppClient "github.com/mw-felker/terra-major-api/pkg/client/webapp"
 	"github.com/mw-felker/terra-major-api/pkg/core"
 	"github.com/mw-felker/terra-major-api/pkg/utils"
 	"golang.org/x/crypto/bcrypt"
 )
+
+type LoginResponse struct {
+	Token string `json:"token"`
+}
 
 func Login(app *core.App) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
@@ -52,7 +57,9 @@ func Login(app *core.App) http.HandlerFunc {
 			return
 		}
 
-		response, e := json.Marshal(models.AccountResponse{BaseAccount: accountInDB.BaseAccount})
+		token := webAppClient.GenerateToken(accountInDB.ID)
+
+		response, e := json.Marshal(LoginResponse{Token: token})
 		if e != nil {
 			utils.ReturnError(writer, e.Error(), http.StatusInternalServerError)
 			return

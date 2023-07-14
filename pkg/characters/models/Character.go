@@ -9,6 +9,7 @@ import (
 
 type Character struct {
 	ID           string    `gorm:"type:uuid;primary_key;unique;" json:"id"`
+	AccountId    string    `gorm:"type:uuid;not null;unique;" json:"accountId"`
 	Name         string    `gorm:"type:varchar(100);not null" json:"name"`
 	Bio          string    `gorm:"type:text;default:''" json:"bio"`
 	Age          int       `gorm:"type:int;default:25" json:"age"`
