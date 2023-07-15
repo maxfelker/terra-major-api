@@ -1,4 +1,4 @@
-// pkg/sandboxes/handlers/sandboxes.go
+// pkg/characters/handlers/characters.go
 
 package handlers
 
@@ -6,13 +6,13 @@ import (
 	"encoding/json"
 	"net/http"
 
+	models "github.com/mw-felker/terra-major-api/pkg/characters/models"
 	webAppClient "github.com/mw-felker/terra-major-api/pkg/client/webapp"
 	core "github.com/mw-felker/terra-major-api/pkg/core"
-	models "github.com/mw-felker/terra-major-api/pkg/sandboxes/models"
 	utils "github.com/mw-felker/terra-major-api/pkg/utils"
 )
 
-func GetMySandboxes(app *core.App) http.HandlerFunc {
+func GetMyCharacters(app *core.App) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		claims, err := webAppClient.ParseAndValidateToken(request)
 		if err != nil {
@@ -20,15 +20,15 @@ func GetMySandboxes(app *core.App) http.HandlerFunc {
 			return
 		}
 
-		var sandboxes []models.Sandbox
-		result := app.DB.Where("account_id = ?", claims.AccountId).Find(&sandboxes)
+		var characters []models.Character
+		result := app.DB.Where("account_id = ?", claims.AccountId).Find(&characters)
 
 		if result.Error != nil {
 			utils.ReturnError(writer, result.Error.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		response, err := json.Marshal(sandboxes)
+		response, err := json.Marshal(characters)
 
 		if err != nil {
 			utils.ReturnError(writer, err.Error(), http.StatusInternalServerError)

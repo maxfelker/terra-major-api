@@ -10,50 +10,50 @@ import (
 	webAppClient "github.com/mw-felker/terra-major-api/pkg/client/webapp"
 	"github.com/mw-felker/terra-major-api/pkg/core"
 	"github.com/mw-felker/terra-major-api/pkg/utils"
-	"golang.org/x/crypto/bcrypt"
 )
 
-func Login(app *core.App) http.HandlerFunc {
+func CreateMyAccount(app *core.App) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		decoder := json.NewDecoder(request.Body)
-		var suppliedAccount models.Account
-		err := decoder.Decode(&suppliedAccount)
+		var newAccount models.Account
+		err := decoder.Decode(&newAccount)
 		if err != nil {
 			utils.ReturnError(writer, err.Error())
 			return
 		}
 
-		if suppliedAccount.Email == "" {
+		if newAccount.Email == "" {
 			utils.ReturnError(writer, "Email is required")
 			return
 		}
 
-		_, err = mail.ParseAddress(suppliedAccount.Email)
+		_, err = mail.ParseAddress(newAccount.Email)
 		if err != nil {
 			utils.ReturnError(writer, "Invalid email format")
 			return
 		}
 
-		if suppliedAccount.Password == "" {
+		if newAccount.Password == "" {
 			utils.ReturnError(writer, "Password is required")
 			return
 		}
 
-		var accountInDB models.Account
-		if result := app.DB.Where("email = ?", strings.TrimSpace(suppliedAccount.Email)).First(&accountInDB); result.Error != nil {
-			utils.ReturnError(writer, "No account with this email", http.StatusNotFound)
+		if !validatePasswordRequirements(newAccount.Password) {
+			utils.ReturnError(writer, "Password must be at least 8 characters long, contain at least one number, one uppercase letter, and one special character")
 			return
 		}
 
-		userPass := []byte(strings.TrimSpace(suppliedAccount.Password))
-		passInDb := []byte(accountInDB.Password)
-		mismatched := bcrypt.CompareHashAndPassword(passInDb, userPass)
-		if mismatched != nil {
-			utils.ReturnError(writer, "Incorrect password", http.StatusUnauthorized)
+		result := app.DB.Create(&newAccount)
+		if result.Error != nil {
+			if strings.Contains(result.Error.Error(), "23505") {
+				utils.ReturnError(writer, "An account with this email already exists", http.StatusConflict)
+			} else {
+				utils.ReturnError(writer, result.Error.Error(), http.StatusInternalServerError)
+			}
 			return
 		}
 
-		token := webAppClient.GenerateToken(accountInDB.ID)
+		token := webAppClient.GenerateToken(newAccount.ID)
 
 		response, e := json.Marshal(webAppClient.TokenResponse{Token: token})
 		if e != nil {
@@ -62,7 +62,7 @@ func Login(app *core.App) http.HandlerFunc {
 		}
 
 		writer.Header().Set("Content-Type", "application/json")
-		writer.WriteHeader(http.StatusOK)
+		writer.WriteHeader(http.StatusCreated)
 		writer.Write(response)
 	}
 }

@@ -2,15 +2,13 @@ package handlers
 
 import (
 	"encoding/json"
-	"errors"
 	"net/http"
 
-	"github.com/gorilla/mux"
 	models "github.com/mw-felker/terra-major-api/pkg/accounts/models"
+	webAppClient "github.com/mw-felker/terra-major-api/pkg/client/webapp"
 	"github.com/mw-felker/terra-major-api/pkg/core"
 	utils "github.com/mw-felker/terra-major-api/pkg/utils"
 	"golang.org/x/crypto/bcrypt"
-	"gorm.io/gorm"
 )
 
 type PasswordUpdate struct {
@@ -20,41 +18,26 @@ type PasswordUpdate struct {
 
 func UpdatePassword(app *core.App) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
-		vars := mux.Vars(request)
-		accountId := vars["id"]
+		claims, err := webAppClient.ParseAndValidateToken(request)
+		if err != nil {
+			utils.ReturnError(writer, err.Error(), http.StatusUnauthorized)
+			return
+		}
 
 		var passwordUpdate PasswordUpdate
 		decoder := json.NewDecoder(request.Body)
-		err := decoder.Decode(&passwordUpdate)
+		err = decoder.Decode(&passwordUpdate)
 		if err != nil {
 			utils.ReturnError(writer, err.Error())
 			return
 		}
 
 		var existingAccount models.Account
-		findResult := app.DB.First(&existingAccount, "id = ?", accountId)
-		if findResult.Error != nil {
-			if errors.Is(findResult.Error, gorm.ErrRecordNotFound) {
-				utils.ReturnError(writer, "Account not found", http.StatusNotFound)
-			} else {
-				utils.ReturnError(writer, findResult.Error.Error(), http.StatusInternalServerError)
-			}
-			return
-		}
-
-		if passwordUpdate.CurrentPassword == "" {
-			utils.ReturnError(writer, "currentPassword is required")
-			return
-		}
+		app.DB.First(&existingAccount, "id = ?", claims.AccountId)
 
 		mismatched := bcrypt.CompareHashAndPassword([]byte(existingAccount.Password), []byte(passwordUpdate.CurrentPassword))
 		if mismatched != nil {
 			utils.ReturnError(writer, "currentPassword is incorrect", http.StatusUnauthorized)
-			return
-		}
-
-		if passwordUpdate.NewPassword == "" {
-			utils.ReturnError(writer, "newPassword is required")
 			return
 		}
 
@@ -64,14 +47,18 @@ func UpdatePassword(app *core.App) http.HandlerFunc {
 		}
 
 		existingAccount.Password = models.GeneratePassword(passwordUpdate.NewPassword)
-		result := app.DB.Save(&existingAccount)
+		app.DB.Save(&existingAccount)
 
-		if result.Error != nil {
-			utils.ReturnError(writer, result.Error.Error(), http.StatusInternalServerError)
+		token := webAppClient.GenerateToken(existingAccount.ID)
+
+		response, e := json.Marshal(webAppClient.TokenResponse{Token: token})
+		if e != nil {
+			utils.ReturnError(writer, e.Error(), http.StatusInternalServerError)
 			return
 		}
 
 		writer.Header().Set("Content-Type", "application/json")
 		writer.WriteHeader(http.StatusOK)
+		writer.Write(response)
 	}
 }
