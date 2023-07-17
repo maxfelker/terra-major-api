@@ -6,6 +6,7 @@ import (
 
 	accounts "github.com/mw-felker/terra-major-api/pkg/accounts/models"
 	characters "github.com/mw-felker/terra-major-api/pkg/characters/models"
+	webAppClient "github.com/mw-felker/terra-major-api/pkg/client/webapp"
 	"github.com/mw-felker/terra-major-api/pkg/core"
 	sandboxes "github.com/mw-felker/terra-major-api/pkg/sandboxes/models"
 	utils "github.com/mw-felker/terra-major-api/pkg/utils"
@@ -13,9 +14,15 @@ import (
 
 func CreateCharacter(app *core.App) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
+		claims, err := webAppClient.ParseAndValidateToken(request)
+		if err != nil {
+			utils.ReturnError(writer, err.Error(), http.StatusUnauthorized)
+			return
+		}
+
 		decoder := json.NewDecoder(request.Body)
 		var newCharacter characters.Character
-		err := decoder.Decode(&newCharacter)
+		err = decoder.Decode(&newCharacter)
 		if err != nil {
 			utils.ReturnError(writer, err.Error())
 			return
@@ -26,17 +33,13 @@ func CreateCharacter(app *core.App) http.HandlerFunc {
 			return
 		}
 
-		if newCharacter.AccountId == "" {
-			utils.ReturnError(writer, "AccountId is required")
-			return
-		}
-
-		// check if Account exists
 		var account accounts.Account
-		if err := app.DB.Where("id = ?", newCharacter.AccountId).First(&account).Error; err != nil {
+		if err := app.DB.Where("id = ?", claims.AccountId).First(&account).Error; err != nil {
 			utils.ReturnError(writer, "Account not found")
 			return
 		}
+
+		newCharacter.AccountId = claims.AccountId
 
 		result := app.DB.Create(&newCharacter)
 		if result.Error != nil {
@@ -46,7 +49,7 @@ func CreateCharacter(app *core.App) http.HandlerFunc {
 
 		var newSandbox sandboxes.Sandbox
 		newSandbox.CharacterId = newCharacter.ID
-		newSandbox.AccountId = newCharacter.AccountId // MOVE TO JWT
+		newSandbox.AccountId = claims.AccountId
 		sandboxResult := app.DB.Create(&newSandbox)
 		if sandboxResult.Error != nil {
 			utils.ReturnError(writer, sandboxResult.Error.Error())

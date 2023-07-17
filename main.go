@@ -30,8 +30,16 @@ func main() {
 	app := core.CreateApp()
 	seedDb(app)
 
+	// Auth
 	app.Router.HandleFunc("/login", accounts.Login(app)).Methods("POST")
 	app.Router.HandleFunc("/tokens", client.CreateUnityClientToken(app)).Methods("POST")
+
+	// User-centric (me) routes
+	app.Router.HandleFunc("/signup", accounts.CreateMyAccount(app)).Methods("POST")
+	app.Router.HandleFunc("/me", accounts.GetMyAccount(app)).Methods("GET")
+	app.Router.HandleFunc("/my/password", accounts.UpdatePassword(app)).Methods("PATCH")
+	app.Router.HandleFunc("/my/sandboxes", sandboxes.GetMySandboxes(app)).Methods("GET")
+	app.Router.HandleFunc("/my/characters", characters.GetMyCharacters(app)).Methods("GET")
 
 	// Accounts
 	app.Router.HandleFunc("/accounts", accounts.CreateAccount(app)).Methods("POST")
@@ -39,9 +47,8 @@ func main() {
 	app.Router.HandleFunc("/accounts/{id}", accounts.UpdateAccount(app)).Methods("PATCH")
 
 	// Characters
-	app.Router.HandleFunc("/characters", characters.GetCharacters(app)).Methods("GET")
-	app.Router.HandleFunc("/characters/{id}", characters.GetCharacterById(app)).Methods("GET")
 	app.Router.HandleFunc("/characters", characters.CreateCharacter(app)).Methods("POST")
+	app.Router.HandleFunc("/characters/{id}", characters.GetCharacterById(app)).Methods("GET")
 	app.Router.HandleFunc("/characters/{id}", characters.UpdateCharacter(app)).Methods("PATCH")
 	app.Router.HandleFunc("/characters/{id}", characters.ArchiveCharacter(app)).Methods("DELETE")
 
@@ -57,13 +64,6 @@ func main() {
 	app.Router.HandleFunc("/sandboxes/{sandboxId}/instances", sandboxes.CreateInstance(app)).Methods("POST")
 	app.Router.HandleFunc("/sandboxes/{sandboxId}/instances/{instanceId}", sandboxes.UpdateInstance(app)).Methods("PATCH")
 	app.Router.HandleFunc("/sandboxes/{sandboxId}/instances/{instanceId}", sandboxes.ArchiveInstance(app)).Methods("DELETE")
-
-	// My routes
-	app.Router.HandleFunc("/signup", accounts.CreateMyAccount(app)).Methods("POST")
-	app.Router.HandleFunc("/me", accounts.GetMyAccount(app)).Methods("GET")
-	app.Router.HandleFunc("/me/password", accounts.UpdatePassword(app)).Methods("PATCH")
-	app.Router.HandleFunc("/my/sandboxes", sandboxes.GetMySandboxes(app)).Methods("GET")
-	app.Router.HandleFunc("/my/characters", characters.GetMyCharacters(app)).Methods("GET")
 
 	corsObj := handlers.CORS(handlers.AllowedMethods([]string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"}),
 		handlers.AllowedOrigins([]string{"*"}),
