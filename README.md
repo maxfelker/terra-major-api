@@ -11,6 +11,7 @@ POSTGRES_HOST=postgres
 POSTGRES_USER=tmdbuser
 POSTGRES_PASSWORD=bigland
 POSTGRES_DATABASE=terramajor
+POSTGRES_SSL=disable
 ```
 
 Next, run the local database:

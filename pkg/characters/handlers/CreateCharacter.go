@@ -4,34 +4,61 @@ import (
 	"encoding/json"
 	"net/http"
 
-	models "github.com/mw-felker/terra-major-api/pkg/characters/models"
+	accounts "github.com/mw-felker/terra-major-api/pkg/accounts/models"
+	characters "github.com/mw-felker/terra-major-api/pkg/characters/models"
+	webAppClient "github.com/mw-felker/terra-major-api/pkg/client/webapp"
 	"github.com/mw-felker/terra-major-api/pkg/core"
+	sandboxes "github.com/mw-felker/terra-major-api/pkg/sandboxes/models"
+	utils "github.com/mw-felker/terra-major-api/pkg/utils"
 )
 
 func CreateCharacter(app *core.App) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
-		decoder := json.NewDecoder(request.Body)
-		var newCharacter models.Character
-		err := decoder.Decode(&newCharacter)
+		claims, err := webAppClient.ParseAndValidateToken(request)
 		if err != nil {
-			http.Error(writer, err.Error(), http.StatusBadRequest)
+			utils.ReturnError(writer, err.Error(), http.StatusUnauthorized)
+			return
+		}
+
+		decoder := json.NewDecoder(request.Body)
+		var newCharacter characters.Character
+		err = decoder.Decode(&newCharacter)
+		if err != nil {
+			utils.ReturnError(writer, err.Error())
 			return
 		}
 
 		if newCharacter.Name == "" {
-			http.Error(writer, "Name is required", http.StatusBadRequest)
+			utils.ReturnError(writer, "Name is required")
 			return
 		}
 
+		var account accounts.Account
+		if err := app.DB.Where("id = ?", claims.AccountId).First(&account).Error; err != nil {
+			utils.ReturnError(writer, "Account not found")
+			return
+		}
+
+		newCharacter.AccountId = claims.AccountId
+
 		result := app.DB.Create(&newCharacter)
 		if result.Error != nil {
-			http.Error(writer, result.Error.Error(), http.StatusInternalServerError)
+			utils.ReturnError(writer, result.Error.Error())
+			return
+		}
+
+		var newSandbox sandboxes.Sandbox
+		newSandbox.CharacterId = newCharacter.ID
+		newSandbox.AccountId = claims.AccountId
+		sandboxResult := app.DB.Create(&newSandbox)
+		if sandboxResult.Error != nil {
+			utils.ReturnError(writer, sandboxResult.Error.Error())
 			return
 		}
 
 		response, e := json.Marshal(newCharacter)
 		if e != nil {
-			http.Error(writer, e.Error(), http.StatusInternalServerError)
+			utils.ReturnError(writer, e.Error())
 			return
 		}
 

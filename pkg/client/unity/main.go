@@ -37,8 +37,8 @@ func generateClaim(accountId string, sandboxId string, characterId string) *Clai
 		SandboxId:   sandboxId,
 		CharacterId: characterId,
 		StandardClaims: jwt.StandardClaims{
-			Issuer:    "TerraMajorAPI",
-			Audience:  "UnityClient",
+			Issuer:    "terra-major-api",
+			Audience:  "unity-client",
 			ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
 		},
 	}

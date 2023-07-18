@@ -6,5 +6,6 @@ COPY go.sum go.sum
 COPY go.mod go.mod
 RUN go mod download
 RUN mkdir keys/
-RUN go run pkg/client/generatePem/main.go /app/keys/unity-client.pem
+RUN go run pkg/client/pem/main.go /app/keys terra-major-webapp
+RUN go run pkg/client/pem/main.go /app/keys unity-client
 ENTRYPOINT go run main.go
