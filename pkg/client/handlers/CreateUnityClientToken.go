@@ -5,9 +5,9 @@ import (
 	"errors"
 	"net/http"
 
-	accounts "github.com/mw-felker/terra-major-api/pkg/accounts/models"
 	characters "github.com/mw-felker/terra-major-api/pkg/characters/models"
 	unityClient "github.com/mw-felker/terra-major-api/pkg/client/unity"
+	webAppClient "github.com/mw-felker/terra-major-api/pkg/client/webapp"
 	"github.com/mw-felker/terra-major-api/pkg/core"
 	sandboxes "github.com/mw-felker/terra-major-api/pkg/sandboxes/models"
 	"github.com/mw-felker/terra-major-api/pkg/utils"
@@ -15,9 +15,7 @@ import (
 )
 
 type TokenPayload struct {
-	AccountId   string `json:"accountId"`
 	CharacterId string `json:"characterId"`
-	SandboxId   string `json:"sandboxId"`
 }
 
 type TokenResponse struct {
@@ -26,28 +24,17 @@ type TokenResponse struct {
 
 func CreateUnityClientToken(app *core.App) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
+		claims, err := webAppClient.ParseAndValidateToken(request)
+		if err != nil {
+			utils.ReturnError(writer, err.Error(), http.StatusUnauthorized)
+			return
+		}
+
 		decoder := json.NewDecoder(request.Body)
 		var tokenPayload TokenPayload
-		err := decoder.Decode(&tokenPayload)
+		err = decoder.Decode(&tokenPayload)
 		if err != nil {
 			utils.ReturnError(writer, err.Error())
-			return
-		}
-
-		if tokenPayload.AccountId == "" {
-			utils.ReturnError(writer, "accountId is required")
-			return
-		}
-
-		var account accounts.Account
-		accountResult := app.DB.First(&account, "id = ?", tokenPayload.AccountId)
-
-		if accountResult.Error != nil {
-			if errors.Is(accountResult.Error, gorm.ErrRecordNotFound) {
-				utils.ReturnError(writer, "Account not found", http.StatusNotFound)
-			} else {
-				utils.ReturnError(writer, accountResult.Error.Error(), http.StatusInternalServerError)
-			}
 			return
 		}
 
@@ -68,13 +55,8 @@ func CreateUnityClientToken(app *core.App) http.HandlerFunc {
 			return
 		}
 
-		if tokenPayload.SandboxId == "" {
-			utils.ReturnError(writer, "sandboxId is required")
-			return
-		}
-
 		var sandbox sandboxes.Sandbox
-		sandboxResult := app.DB.First(&sandbox, "id = ?", tokenPayload.SandboxId)
+		sandboxResult := app.DB.First(&sandbox, "character_id = ?", tokenPayload.CharacterId)
 
 		if sandboxResult.Error != nil {
 			if errors.Is(sandboxResult.Error, gorm.ErrRecordNotFound) {
@@ -85,7 +67,7 @@ func CreateUnityClientToken(app *core.App) http.HandlerFunc {
 			return
 		}
 
-		token := unityClient.GenerateClientToken(tokenPayload.AccountId, tokenPayload.SandboxId, tokenPayload.CharacterId)
+		token := unityClient.GenerateClientToken(claims.AccountId, sandbox.ID, tokenPayload.CharacterId)
 		response, err := json.Marshal(TokenResponse{
 			Token: token,
 		})
