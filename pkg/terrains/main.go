@@ -3,29 +3,52 @@ package terrains
 import (
 	"math/rand"
 
+	"github.com/go-noise/noise"
 	sandboxModels "github.com/mw-felker/terra-major-api/pkg/sandboxes/models"
 	models "github.com/mw-felker/terra-major-api/pkg/terrains/models"
-	"github.com/ojrac/opensimplex-go"
+)
+
+const (
+	perlinHeight = 1.5
+	perlinDamper = 0.25
 )
 
 func floatPtr(f float32) *float32 {
 	return &f
 }
 
-func RandomTerrain(worldDim int) *models.TerrainChunk {
-	var dimension = worldDim
-	var pos = sandboxModels.Vector3{X: floatPtr(1.0), Y: floatPtr(2.0), Z: floatPtr(3.0)}
-	return NewTerrainChunk(pos, dimension, dimension)
+func NewWorld(worldDim, chunkDim int) []*models.TerrainChunk {
+	var detailResolutionX = 128
+	var detailResolutionY = 16
+	var alphamapResolution = 128
+	var heightmapResolution = 128
+
+	var chunks []*models.TerrainChunk
+	for i := 0; i < worldDim; i++ {
+		for j := 0; j < worldDim; j++ {
+			pos := sandboxModels.Vector3{
+				X: floatPtr(float32(i * chunkDim)),
+				Y: floatPtr(0),
+				Z: floatPtr(float32(j * chunkDim)),
+			}
+			chunks = append(chunks, NewTerrainChunk(pos, chunkDim, chunkDim, detailResolutionX, detailResolutionY, heightmapResolution, alphamapResolution))
+		}
+	}
+	return chunks
 }
 
-func NewTerrainChunk(pos sandboxModels.Vector3, width, height int) *models.TerrainChunk {
+func NewTerrainChunk(pos sandboxModels.Vector3, dimension, height, detailResX, detailResY, heightmapRes, alphamapRes int) *models.TerrainChunk {
 	seed := rand.Int63()
-	hm := NewHeightmap(width, height, seed)
+	hm := NewHeightmap(dimension, dimension, seed)
 
 	return &models.TerrainChunk{
-		Position:  pos,
-		Seed:      seed,
-		Heightmap: models.Heightmap(hm),
+		Position:            pos,
+		Dimension:           dimension,
+		Height:              height,
+		DetailResolution:    models.Resolution{X: detailResX, Y: detailResY},
+		HeightmapResolution: heightmapRes,
+		AlphamapResolution:  alphamapRes,
+		Heightmap:           hm,
 	}
 }
 
@@ -35,11 +58,12 @@ func NewHeightmap(width, height int, seed int64) models.Heightmap {
 		heightmap[i] = make([]float64, width)
 	}
 
-	noise := opensimplex.NewNormalized(seed)
+	perlin := noise.NewPerlin(noise.Seed(seed))
 
 	for y := 0; y < height; y++ {
 		for x := 0; x < width; x++ {
-			heightmap[y][x] = noise.Eval2(float64(x), float64(y))
+			// Scale the output of the noise function by perlinHeight and perlinDamper
+			heightmap[y][x] = perlinHeight * perlin.Eval2(float64(x)/perlinDamper, float64(y)/perlinDamper)
 		}
 	}
 

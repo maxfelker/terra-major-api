@@ -22,7 +22,7 @@ func GetTerrain(app *core.App) http.HandlerFunc {
 
 		fmt.Println(claims)
 
-		newChunk := terrains.RandomTerrain(256)
+		world := terrains.NewWorld(4, 128)
 
 		writer.Header().Set("Content-Type", "application/json")
 		writer.Header().Set("Content-Encoding", "gzip")
@@ -30,7 +30,7 @@ func GetTerrain(app *core.App) http.HandlerFunc {
 		gz := gzip.NewWriter(writer)
 		defer gz.Close()
 
-		if err := json.NewEncoder(gz).Encode(newChunk); err != nil {
+		if err := json.NewEncoder(gz).Encode(world); err != nil {
 			utils.ReturnError(writer, err.Error(), http.StatusInternalServerError)
 		}
 	}
