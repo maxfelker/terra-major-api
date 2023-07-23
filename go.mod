@@ -19,5 +19,6 @@ require (
 	github.com/jackc/pgx/v5 v5.3.1 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
+	github.com/ojrac/opensimplex-go v1.0.2 // indirect
 	golang.org/x/text v0.9.0 // indirect
 )
