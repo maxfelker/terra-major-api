@@ -3,12 +3,15 @@ package terrains
 import (
 	"math/rand"
 
-	"github.com/go-noise/noise"
+	"github.com/aquilax/go-perlin"
 	sandboxModels "github.com/mw-felker/terra-major-api/pkg/sandboxes/models"
 	models "github.com/mw-felker/terra-major-api/pkg/terrains/models"
 )
 
 const (
+	alpha        = 2.
+	beta         = 2.
+	n            = 3
 	perlinHeight = 1.5
 	perlinDamper = 0.25
 )
@@ -58,12 +61,11 @@ func NewHeightmap(width, height int, seed int64) models.Heightmap {
 		heightmap[i] = make([]float64, width)
 	}
 
-	perlin := noise.NewPerlin(noise.Seed(seed))
+	perlin := perlin.NewPerlin(alpha, beta, n, seed)
 
 	for y := 0; y < height; y++ {
 		for x := 0; x < width; x++ {
-			// Scale the output of the noise function by perlinHeight and perlinDamper
-			heightmap[y][x] = perlinHeight * perlin.Eval2(float64(x)/perlinDamper, float64(y)/perlinDamper)
+			heightmap[y][x] = perlinHeight * perlin.Noise2D(float64(x)/perlinDamper, float64(y)/perlinDamper)
 		}
 	}
 
