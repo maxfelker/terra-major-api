@@ -22,7 +22,8 @@ func GetTerrain(app *core.App) http.HandlerFunc {
 
 		fmt.Println(claims)
 
-		world := terrains.NewWorld(4, 128)
+		seed := int64(42)
+		world := terrains.NewWorld(4, 128, 32, seed)
 
 		writer.Header().Set("Content-Type", "application/json")
 		writer.Header().Set("Content-Encoding", "gzip")
