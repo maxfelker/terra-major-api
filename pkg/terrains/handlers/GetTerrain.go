@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"bytes"
 	"compress/gzip"
 	"encoding/json"
 	"fmt"
@@ -20,18 +21,28 @@ func GetTerrain(app *core.App) http.HandlerFunc {
 			return
 		}
 
-		fmt.Println(claims)
+		fmt.Println("Generating code for " + claims.AccountId)
 
 		seed := int64(42)
 		world := terrains.NewWorld(4, 128, 32, seed)
 
-		writer.Header().Set("Content-Type", "application/json")
-		writer.Header().Set("Content-Encoding", "gzip")
-
-		gz := gzip.NewWriter(writer)
-		defer gz.Close()
+		// first, encode to a buffer
+		var buf bytes.Buffer
+		gz := gzip.NewWriter(&buf)
 
 		if err := json.NewEncoder(gz).Encode(world); err != nil {
+			utils.ReturnError(writer, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		if err := gz.Close(); err != nil {
+			utils.ReturnError(writer, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		// only write to the ResponseWriter if there are no errors
+		writer.Header().Set("Content-Type", "application/json")
+		writer.Header().Set("Content-Encoding", "gzip")
+		if _, err := writer.Write(buf.Bytes()); err != nil {
 			utils.ReturnError(writer, err.Error(), http.StatusInternalServerError)
 		}
 	}
