@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	models "github.com/mw-felker/terra-major-api/pkg/accounts/models"
-	webAppClient "github.com/mw-felker/terra-major-api/pkg/client/webapp"
+	authClient "github.com/mw-felker/terra-major-api/pkg/auth/client"
 	"github.com/mw-felker/terra-major-api/pkg/core"
 	utils "github.com/mw-felker/terra-major-api/pkg/utils"
 	"golang.org/x/crypto/bcrypt"
@@ -18,7 +18,7 @@ type PasswordUpdate struct {
 
 func UpdatePassword(app *core.App) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
-		claims, err := webAppClient.ParseAndValidateToken(request)
+		claims, err := authClient.ParseAndValidateToken(request)
 		if err != nil {
 			utils.ReturnError(writer, err.Error(), http.StatusUnauthorized)
 			return
@@ -49,9 +49,9 @@ func UpdatePassword(app *core.App) http.HandlerFunc {
 		existingAccount.Password = models.GeneratePassword(passwordUpdate.NewPassword)
 		app.DB.Save(&existingAccount)
 
-		token := webAppClient.GenerateToken(existingAccount.ID)
+		token := authClient.GenerateToken(existingAccount.ID, "", "")
 
-		response, e := json.Marshal(webAppClient.TokenResponse{Token: token})
+		response, e := json.Marshal(authClient.TokenResponse{Token: token})
 		if e != nil {
 			utils.ReturnError(writer, e.Error(), http.StatusInternalServerError)
 			return

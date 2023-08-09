@@ -5,9 +5,8 @@ import (
 	"errors"
 	"net/http"
 
+	authClient "github.com/mw-felker/terra-major-api/pkg/auth/client"
 	characters "github.com/mw-felker/terra-major-api/pkg/characters/models"
-	unityClient "github.com/mw-felker/terra-major-api/pkg/client/unity"
-	webAppClient "github.com/mw-felker/terra-major-api/pkg/client/webapp"
 	"github.com/mw-felker/terra-major-api/pkg/core"
 	sandboxes "github.com/mw-felker/terra-major-api/pkg/sandboxes/models"
 	"github.com/mw-felker/terra-major-api/pkg/utils"
@@ -24,7 +23,7 @@ type TokenResponse struct {
 
 func CreateUnityClientToken(app *core.App) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
-		claims, err := webAppClient.ParseAndValidateToken(request)
+		claims, err := authClient.ParseAndValidateToken(request)
 		if err != nil {
 			utils.ReturnError(writer, err.Error(), http.StatusUnauthorized)
 			return
@@ -67,7 +66,7 @@ func CreateUnityClientToken(app *core.App) http.HandlerFunc {
 			return
 		}
 
-		token := unityClient.GenerateClientToken(claims.AccountId, sandbox.ID, tokenPayload.CharacterId)
+		token := authClient.GenerateToken(claims.AccountId, sandbox.ID, tokenPayload.CharacterId)
 		response, err := json.Marshal(TokenResponse{
 			Token: token,
 		})
