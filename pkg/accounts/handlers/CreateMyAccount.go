@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	models "github.com/mw-felker/terra-major-api/pkg/accounts/models"
-	webAppClient "github.com/mw-felker/terra-major-api/pkg/client/webapp"
+	authClient "github.com/mw-felker/terra-major-api/pkg/auth/client"
 	"github.com/mw-felker/terra-major-api/pkg/core"
 	"github.com/mw-felker/terra-major-api/pkg/utils"
 )
@@ -53,9 +53,9 @@ func CreateMyAccount(app *core.App) http.HandlerFunc {
 			return
 		}
 
-		token := webAppClient.GenerateToken(newAccount.ID)
+		token := authClient.GenerateToken(newAccount.ID, "", "")
 
-		response, e := json.Marshal(webAppClient.TokenResponse{Token: token})
+		response, e := json.Marshal(authClient.TokenResponse{Token: token})
 		if e != nil {
 			utils.ReturnError(writer, e.Error(), http.StatusInternalServerError)
 			return

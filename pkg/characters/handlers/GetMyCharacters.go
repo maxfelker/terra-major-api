@@ -6,15 +6,15 @@ import (
 	"encoding/json"
 	"net/http"
 
+	authClient "github.com/mw-felker/terra-major-api/pkg/auth/client"
 	models "github.com/mw-felker/terra-major-api/pkg/characters/models"
-	webAppClient "github.com/mw-felker/terra-major-api/pkg/client/webapp"
 	core "github.com/mw-felker/terra-major-api/pkg/core"
 	utils "github.com/mw-felker/terra-major-api/pkg/utils"
 )
 
 func GetMyCharacters(app *core.App) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
-		claims, err := webAppClient.ParseAndValidateToken(request)
+		claims, err := authClient.ParseAndValidateToken(request)
 		if err != nil {
 			utils.ReturnError(writer, err.Error(), http.StatusUnauthorized)
 			return

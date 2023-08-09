@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	webAppClient "github.com/mw-felker/terra-major-api/pkg/client/webapp"
+	authClient "github.com/mw-felker/terra-major-api/pkg/auth/client"
 	core "github.com/mw-felker/terra-major-api/pkg/core"
 	models "github.com/mw-felker/terra-major-api/pkg/sandboxes/models"
 	utils "github.com/mw-felker/terra-major-api/pkg/utils"
@@ -14,7 +14,7 @@ import (
 
 func GetMySandboxes(app *core.App) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
-		claims, err := webAppClient.ParseAndValidateToken(request)
+		claims, err := authClient.ParseAndValidateToken(request)
 		if err != nil {
 			utils.ReturnError(writer, err.Error(), http.StatusUnauthorized)
 			return

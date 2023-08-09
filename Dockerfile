@@ -7,8 +7,7 @@ COPY go.mod go.mod
 COPY go.sum go.sum
 RUN go mod download
 RUN mkdir keys/
-RUN go run pkg/client/pem/main.go /app/keys terra-major-webapp
-RUN go run pkg/client/pem/main.go /app/keys unity-client
+RUN go run pkg/auth/pem/main.go /app/keys terra-major-client
 RUN GOOS=linux GOARCH=amd64 CGO_ENABLED=1 go build -o bin/terra-major-api main.go
 
 FROM alpine:latest as release  

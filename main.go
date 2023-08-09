@@ -8,9 +8,9 @@ import (
 
 	accounts "github.com/mw-felker/terra-major-api/pkg/accounts/handlers"
 	accountModels "github.com/mw-felker/terra-major-api/pkg/accounts/models"
+	auth "github.com/mw-felker/terra-major-api/pkg/auth/handlers"
 	characters "github.com/mw-felker/terra-major-api/pkg/characters/handlers"
 	characterModels "github.com/mw-felker/terra-major-api/pkg/characters/models"
-	client "github.com/mw-felker/terra-major-api/pkg/client/handlers"
 	core "github.com/mw-felker/terra-major-api/pkg/core"
 	sandboxes "github.com/mw-felker/terra-major-api/pkg/sandboxes/handlers"
 	sandboxModels "github.com/mw-felker/terra-major-api/pkg/sandboxes/models"
@@ -33,7 +33,7 @@ func main() {
 
 	// Auth
 	app.Router.HandleFunc("/login", accounts.Login(app)).Methods("POST")
-	app.Router.HandleFunc("/tokens", client.CreateUnityClientToken(app)).Methods("POST")
+	app.Router.HandleFunc("/tokens", auth.CreateUnityClientToken(app)).Methods("POST")
 
 	// User-centric (me) routes
 	app.Router.HandleFunc("/signup", accounts.CreateMyAccount(app)).Methods("POST")

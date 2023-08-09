@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	models "github.com/mw-felker/terra-major-api/pkg/accounts/models"
-	webAppClient "github.com/mw-felker/terra-major-api/pkg/client/webapp"
+	authClient "github.com/mw-felker/terra-major-api/pkg/auth/client"
 	"github.com/mw-felker/terra-major-api/pkg/core"
 	utils "github.com/mw-felker/terra-major-api/pkg/utils"
 	"gorm.io/gorm"
@@ -14,7 +14,7 @@ import (
 
 func GetMyAccount(app *core.App) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
-		claims, err := webAppClient.ParseAndValidateToken(request)
+		claims, err := authClient.ParseAndValidateToken(request)
 		if err != nil {
 			utils.ReturnError(writer, err.Error(), http.StatusUnauthorized)
 			return
