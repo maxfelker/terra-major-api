@@ -4,10 +4,9 @@ import (
 	"bytes"
 	"compress/gzip"
 	"encoding/json"
-	"fmt"
 	"net/http"
 
-	webAppClient "github.com/mw-felker/terra-major-api/pkg/client/webapp"
+	authClient "github.com/mw-felker/terra-major-api/pkg/auth/client"
 	core "github.com/mw-felker/terra-major-api/pkg/core"
 	terrains "github.com/mw-felker/terra-major-api/pkg/terrains"
 	utils "github.com/mw-felker/terra-major-api/pkg/utils"
@@ -15,16 +14,14 @@ import (
 
 func GetTerrain(app *core.App) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
-		claims, err := webAppClient.ParseAndValidateToken(request)
+		_, err := authClient.ParseAndValidateToken(request)
 		if err != nil {
 			utils.ReturnError(writer, err.Error(), http.StatusUnauthorized)
 			return
 		}
 
-		fmt.Println("Generating code for " + claims.AccountId)
-
-		seed := int64(42)
-		world := terrains.NewWorld(4, 128, 32, seed)
+		seed := int64(69)
+		world := terrains.NewWorld(16, 128, 32, seed)
 
 		// first, encode to a buffer
 		var buf bytes.Buffer

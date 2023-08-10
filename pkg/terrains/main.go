@@ -7,11 +7,13 @@ import (
 )
 
 const (
-	alpha        = 2.
-	beta         = 2.
-	n            = 3
-	perlinHeight = 1
-	perlinDamper = 100.0 // Updated the perlinDamper to a larger value
+	alpha           = 2.
+	beta            = 2.
+	n               = 3
+	perlinHeight    = 1
+	perlinDamper    = 10.0 // Updated the perlinDamper to a larger value
+	perlinFrequency = 0.01 // Lower value for broader features
+	perlinAmplitude = 0.75 // Higher value for taller features
 )
 
 func floatPtr(f float32) *float32 {
@@ -19,21 +21,23 @@ func floatPtr(f float32) *float32 {
 }
 
 func NewWorld(chunkCount, chunkDimension, height int, seed int64) []*models.TerrainChunk {
-	var detailResolution = 128
+	var detailResolution = chunkDimension
 	var resolutionPerPatch = 16
-	var alphamapResolution = 129
-	var heightmapResolution = 129
+	var alphamapResolution = chunkDimension
+	var heightmapResolution = chunkDimension
 	var terrainHeight = height
 
 	var chunks []*models.TerrainChunk
 	for i := 0; i < chunkCount; i++ {
 		for j := 0; j < chunkCount; j++ {
+			globalX := float32(i * chunkDimension)
+			globalZ := float32(j * chunkDimension)
 			pos := sandboxModels.Vector3{
-				X: floatPtr(float32(i * chunkDimension)),
+				X: &globalX,
 				Y: floatPtr(0),
-				Z: floatPtr(float32(j * chunkDimension)),
+				Z: &globalZ,
 			}
-			chunks = append(chunks, NewTerrainChunk(pos, chunkDimension, terrainHeight, detailResolution, resolutionPerPatch, heightmapResolution, alphamapResolution, seed))
+			chunks = append(chunks, NewTerrainChunk(pos, chunkDimension+1, terrainHeight, detailResolution, resolutionPerPatch, heightmapResolution, alphamapResolution, seed))
 		}
 	}
 	return chunks
@@ -63,9 +67,14 @@ func NewHeightmap(width, depth int, seed int64, pos sandboxModels.Vector3) model
 
 	for y := 0; y < depth; y++ {
 		for x := 0; x < width; x++ {
-			globalX := float64(*pos.X) + float64(x)/perlinDamper
-			globalY := float64(*pos.Z) + float64(y)/perlinDamper
-			heightmap[y][x] = perlinHeight * perlin.Noise2D(globalX, globalY)
+			globalX := float64(*pos.X) + float64(x)
+			globalY := float64(*pos.Z) + float64(y)
+
+			// Scale the coordinates by the frequency
+			noiseValue := perlin.Noise2D(globalX*perlinFrequency, globalY*perlinFrequency)
+
+			// Scale the noise value by the amplitude
+			heightmap[y][x] = perlinAmplitude * noiseValue
 		}
 	}
 
