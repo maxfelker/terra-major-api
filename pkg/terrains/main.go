@@ -1,6 +1,8 @@
 package terrains
 
 import (
+	"encoding/json"
+
 	"github.com/aquilax/go-perlin"
 	sandboxModels "github.com/mw-felker/terra-major-api/pkg/sandboxes/models"
 	models "github.com/mw-felker/terra-major-api/pkg/terrains/models"
@@ -11,9 +13,9 @@ const (
 	beta            = 2.
 	n               = 3
 	perlinHeight    = 1
-	perlinDamper    = 10.0 // Updated the perlinDamper to a larger value
-	perlinFrequency = 0.01 // Lower value for broader features
-	perlinAmplitude = 0.75 // Higher value for taller features
+	perlinDamper    = 1000.0
+	perlinFrequency = 0.005 // Lower value for broader features
+	perlinAmplitude = 0.85  // Higher value for taller features
 )
 
 func floatPtr(f float32) *float32 {
@@ -37,14 +39,28 @@ func NewWorld(chunkCount, chunkDimension, height int, seed int64) []*models.Terr
 				Y: floatPtr(0),
 				Z: &globalZ,
 			}
-			chunks = append(chunks, NewTerrainChunk(pos, chunkDimension+1, terrainHeight, detailResolution, resolutionPerPatch, heightmapResolution, alphamapResolution, seed))
+			newChunk := NewTerrainChunk(
+				pos,
+				chunkDimension+1,
+				terrainHeight,
+				detailResolution,
+				resolutionPerPatch,
+				heightmapResolution,
+				alphamapResolution,
+				seed,
+			)
+			chunks = append(chunks, newChunk)
 		}
 	}
 	return chunks
 }
 
 func NewTerrainChunk(pos sandboxModels.Vector3, dimension, terrainHeight, detailResolution, resolutionPerPatch, heightmapRes, alphamapRes int, seed int64) *models.TerrainChunk {
-	hm := NewHeightmap(dimension, dimension, seed, pos)
+	heightmap := NewHeightmap(dimension, dimension, seed, pos)
+	heightmapJSON, err := json.Marshal(heightmap)
+	if err != nil {
+		panic(err)
+	}
 
 	return &models.TerrainChunk{
 		Position:            pos,
@@ -53,7 +69,7 @@ func NewTerrainChunk(pos sandboxModels.Vector3, dimension, terrainHeight, detail
 		DetailResolution:    models.Resolution{X: detailResolution, Y: resolutionPerPatch},
 		HeightmapResolution: heightmapRes,
 		AlphamapResolution:  alphamapRes,
-		Heightmap:           hm,
+		Heightmap:           string(heightmapJSON),
 	}
 }
 

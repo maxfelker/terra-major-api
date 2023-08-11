@@ -15,6 +15,7 @@ import (
 	sandboxes "github.com/mw-felker/terra-major-api/pkg/sandboxes/handlers"
 	sandboxModels "github.com/mw-felker/terra-major-api/pkg/sandboxes/models"
 	terrains "github.com/mw-felker/terra-major-api/pkg/terrains/handlers"
+	terrainModels "github.com/mw-felker/terra-major-api/pkg/terrains/models"
 	utils "github.com/mw-felker/terra-major-api/pkg/utils"
 )
 
@@ -24,6 +25,7 @@ func seedDb(app *core.App) {
 	app.DB.AutoMigrate(&characterModels.Character{})
 	app.DB.AutoMigrate(&sandboxModels.Sandbox{})
 	app.DB.AutoMigrate(&sandboxModels.Instance{})
+	app.DB.AutoMigrate(&terrainModels.TerrainChunk{})
 }
 
 func main() {
@@ -67,6 +69,7 @@ func main() {
 	app.Router.HandleFunc("/sandboxes/{sandboxId}/instances/{instanceId}", sandboxes.ArchiveInstance(app)).Methods("DELETE")
 
 	app.Router.HandleFunc("/terrain", terrains.GetTerrain(app)).Methods("GET")
+	app.Router.HandleFunc("/terrain", terrains.CreateTerrainChunk(app)).Methods("POST")
 
 	corsObj := handlers.CORS(handlers.AllowedMethods([]string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"}),
 		handlers.AllowedOrigins([]string{"*"}),

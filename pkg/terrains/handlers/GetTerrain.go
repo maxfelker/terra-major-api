@@ -19,10 +19,10 @@ func GetTerrain(app *core.App) http.HandlerFunc {
 			utils.ReturnError(writer, err.Error(), http.StatusUnauthorized)
 			return
 		}
-		chunkCount := 6
+		chunkCount := 2
 		chunkDimension := 128
-		chunkHeight := 32
-		seed := int64(7)
+		chunkHeight := 64
+		seed := int64(69)
 		world := terrains.NewWorld(chunkCount, chunkDimension, chunkHeight, seed)
 
 		// first, encode to a buffer
