@@ -16,13 +16,28 @@ const (
 	perlinDamper    = 1000.0
 	perlinFrequency = 0.005 // Lower value for broader features
 	perlinAmplitude = 0.85  // Higher value for taller features
+	chunkCount      = 2
+	chunkDimension  = 128
+	height          = 64
 )
 
 func floatPtr(f float32) *float32 {
 	return &f
 }
 
-func NewWorld(chunkCount, chunkDimension, height int, seed int64) []*models.TerrainChunk {
+func CreateChunkGroup(seed int64) *models.ChunkGroup {
+	chunks := GenerateChunks(chunkCount, chunkDimension, height, seed)
+	return &models.ChunkGroup{
+		Position: sandboxModels.Vector3{
+			X: floatPtr(0),
+			Y: floatPtr(0),
+			Z: floatPtr(0),
+		},
+		Chunks: chunks,
+	}
+}
+
+func GenerateChunks(chunkCount, chunkDimension, height int, seed int64) []*models.TerrainChunk {
 	var detailResolution = chunkDimension
 	var resolutionPerPatch = 16
 	var alphamapResolution = chunkDimension

@@ -19,17 +19,15 @@ func GetTerrain(app *core.App) http.HandlerFunc {
 			utils.ReturnError(writer, err.Error(), http.StatusUnauthorized)
 			return
 		}
-		chunkCount := 2
-		chunkDimension := 128
-		chunkHeight := 64
+
 		seed := int64(69)
-		world := terrains.NewWorld(chunkCount, chunkDimension, chunkHeight, seed)
+		chunkGroup := terrains.CreateChunkGroup(seed)
 
 		// first, encode to a buffer
 		var buf bytes.Buffer
 		gz := gzip.NewWriter(&buf)
 
-		if err := json.NewEncoder(gz).Encode(world); err != nil {
+		if err := json.NewEncoder(gz).Encode(chunkGroup); err != nil {
 			utils.ReturnError(writer, err.Error(), http.StatusInternalServerError)
 			return
 		}
