@@ -16,28 +16,18 @@ const (
 	perlinDamper    = 1000.0
 	perlinFrequency = 0.005 // Lower value for broader features
 	perlinAmplitude = 0.85  // Higher value for taller features
-	chunkCount      = 2
-	chunkDimension  = 128
-	height          = 64
+
+	chunkDimension   = 128
+	height           = 64
+	chunkCount       = 2
+	neighborhoodSize = 4
 )
 
 func floatPtr(f float32) *float32 {
 	return &f
 }
 
-func CreateChunkGroup(seed int64) *models.ChunkGroup {
-	chunks := GenerateChunks(chunkCount, chunkDimension, height, seed)
-	return &models.ChunkGroup{
-		Position: sandboxModels.Vector3{
-			X: floatPtr(0),
-			Y: floatPtr(0),
-			Z: floatPtr(0),
-		},
-		Chunks: chunks,
-	}
-}
-
-func GenerateChunks(chunkCount, chunkDimension, height int, seed int64) []*models.TerrainChunk {
+func GenerateChunks(chunkCount, chunkDimension, height int, seed int64, offset sandboxModels.Vector3) []*models.TerrainChunk {
 	var detailResolution = chunkDimension
 	var resolutionPerPatch = 16
 	var alphamapResolution = chunkDimension
@@ -47,8 +37,8 @@ func GenerateChunks(chunkCount, chunkDimension, height int, seed int64) []*model
 	var chunks []*models.TerrainChunk
 	for i := 0; i < chunkCount; i++ {
 		for j := 0; j < chunkCount; j++ {
-			globalX := float32(i * chunkDimension)
-			globalZ := float32(j * chunkDimension)
+			globalX := float32(i*chunkDimension) + *offset.X
+			globalZ := float32(j*chunkDimension) + *offset.Z
 			pos := sandboxModels.Vector3{
 				X: &globalX,
 				Y: floatPtr(0),
@@ -110,4 +100,58 @@ func NewHeightmap(width, depth int, seed int64, pos sandboxModels.Vector3) model
 	}
 
 	return heightmap
+}
+
+func CreateChunkNeighborhood(seed int64) *models.ChunkNeighborhood {
+	groups := GenerateChunkGroups(seed)
+	return &models.ChunkNeighborhood{
+		Position: sandboxModels.Vector3{
+			X: floatPtr(0),
+			Y: floatPtr(0),
+			Z: floatPtr(0),
+		},
+		Groups: groups,
+	}
+}
+
+func CreateChunkGroup(seed int64, offset sandboxModels.Vector3) *models.ChunkGroup {
+	chunks := GenerateChunks(chunkCount, chunkDimension, height, seed, offset)
+	return &models.ChunkGroup{
+		Position: sandboxModels.Vector3{
+			X: floatPtr(0),
+			Y: floatPtr(0),
+			Z: floatPtr(0),
+		},
+		Chunks: chunks,
+	}
+}
+
+func GenerateChunkGroups(seed int64) []*models.ChunkGroup {
+	var groups []*models.ChunkGroup
+	for i := 0; i < neighborhoodSize; i++ {
+		for j := 0; j < neighborhoodSize; j++ {
+			groupX := float32(i * chunkCount * chunkDimension)
+			groupZ := float32(j * chunkCount * chunkDimension)
+			group := CreateChunkGroup(seed, sandboxModels.Vector3{
+				X: &groupX,
+				Y: floatPtr(0),
+				Z: &groupZ,
+			})
+			// Update the position of the chunk group based on its position in the neighborhood grid
+			group.Position.X = &groupX
+			group.Position.Z = &groupZ
+			groups = append(groups, group)
+		}
+	}
+	return groups
+}
+
+func FlattenChunksArray(neighborhood *models.ChunkNeighborhood) []*models.TerrainChunk {
+	var allChunks []*models.TerrainChunk
+	for _, group := range neighborhood.Groups {
+		for _, chunk := range group.Chunks {
+			allChunks = append(allChunks, chunk)
+		}
+	}
+	return allChunks
 }

@@ -21,13 +21,14 @@ func GetTerrain(app *core.App) http.HandlerFunc {
 		}
 
 		seed := int64(69)
-		chunkGroup := terrains.CreateChunkGroup(seed)
+		chunkNeighborhood := terrains.CreateChunkNeighborhood(seed)
+		chunks := terrains.FlattenChunksArray(chunkNeighborhood)
 
 		// first, encode to a buffer
 		var buf bytes.Buffer
 		gz := gzip.NewWriter(&buf)
 
-		if err := json.NewEncoder(gz).Encode(chunkGroup); err != nil {
+		if err := json.NewEncoder(gz).Encode(chunks); err != nil {
 			utils.ReturnError(writer, err.Error(), http.StatusInternalServerError)
 			return
 		}
