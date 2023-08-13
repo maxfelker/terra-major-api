@@ -9,37 +9,30 @@ import (
 )
 
 const (
-	alpha            = 1
-	beta             = 2
-	n                = 3
-	perlinFrequency  = 0.0005 // Lower value for broader features
-	perlinAmplitude  = 0.85   // Higher value for taller features
-	chunkDimension   = 128
-	height           = 128
-	chunkCount       = 2
-	neighborhoodSize = 4
+	// Heightmap noise
+	alpha           = 1
+	beta            = 2
+	n               = 3
+	perlinFrequency = 0.0005 // Lower value for broader features
+	perlinAmplitude = 0.85   // Higher value for taller features
+	// Grouping
+	chunkPerGroup         = 2
+	groupsPerNeighborhood = 2
+	// Chunk Config
+	chunkDimension      = 1024
+	chunkHeight         = 256
+	heightmapResolution = 1025 // (129, 257, 469, 513, 769, 1025, 2049)
+	alphamapResolution  = 1024
+	detailResolution    = 256
+	resolutionPerPatch  = 16
 )
-
-/*
-	public int HeightmapResolution = 1025; // (129, 257, 469, 513, 769, 1025, 2049)
-	public int AlphamapResolution = 1024;
-	public int DetailResolution = 256;
-	public int WorldDimensions = 1000;
-	public int TerrainDimension = 256;
-	public int TerrainHeight = 64;
-*/
 
 func floatPtr(f float32) *float32 {
 	return &f
 }
 
 func GenerateChunks(chunkCount, chunkDimension, height int, seed int64, offset sandboxModels.Vector3) []*models.TerrainChunk {
-	var detailResolution = chunkDimension
-	var resolutionPerPatch = 16
-	var alphamapResolution = chunkDimension
-	var heightmapResolution = chunkDimension
 	var terrainHeight = height
-
 	var chunks []*models.TerrainChunk
 	for i := 0; i < chunkCount; i++ {
 		for j := 0; j < chunkCount; j++ {
@@ -67,8 +60,7 @@ func GenerateChunks(chunkCount, chunkDimension, height int, seed int64, offset s
 }
 
 func NewTerrainChunk(position sandboxModels.Vector3, dimension, terrainHeight, detailResolution, resolutionPerPatch, heightmapRes, alphamapRes int, seed int64) *models.TerrainChunk {
-	heightmapDimension := dimension + 1
-	heightmap := NewHeightmap(heightmapDimension, heightmapDimension, seed, position)
+	heightmap := NewHeightmap(heightmapRes, heightmapRes, seed, position)
 	heightmapJSON, err := json.Marshal(heightmap)
 	if err != nil {
 		panic(err)
@@ -118,7 +110,7 @@ func CreateChunkNeighborhood(seed int64) *models.ChunkNeighborhood {
 }
 
 func CreateChunkGroup(seed int64, offset sandboxModels.Vector3) *models.ChunkGroup {
-	chunks := GenerateChunks(chunkCount, chunkDimension, height, seed, offset)
+	chunks := GenerateChunks(chunkPerGroup, chunkDimension, chunkHeight, seed, offset)
 	return &models.ChunkGroup{
 		Position: sandboxModels.Vector3{
 			X: floatPtr(0),
@@ -131,11 +123,11 @@ func CreateChunkGroup(seed int64, offset sandboxModels.Vector3) *models.ChunkGro
 
 func GenerateChunkGroups(seed int64) []*models.ChunkGroup {
 	var groups []*models.ChunkGroup
-	halfSize := neighborhoodSize / 2
+	halfSize := groupsPerNeighborhood / 2
 	for i := -halfSize; i < halfSize; i++ {
 		for j := -halfSize; j < halfSize; j++ {
-			groupX := float32(i * chunkCount * chunkDimension)
-			groupZ := float32(j * chunkCount * chunkDimension)
+			groupX := float32(i * chunkPerGroup * chunkDimension)
+			groupZ := float32(j * chunkPerGroup * chunkDimension)
 			group := CreateChunkGroup(seed, sandboxModels.Vector3{
 				X: &groupX,
 				Y: floatPtr(0),
