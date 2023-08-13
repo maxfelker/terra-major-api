@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"compress/gzip"
 	"encoding/json"
+	"math/rand"
 	"net/http"
+	"time"
 
 	authClient "github.com/mw-felker/terra-major-api/pkg/auth/client"
 	core "github.com/mw-felker/terra-major-api/pkg/core"
@@ -19,8 +21,9 @@ func GetTerrain(app *core.App) http.HandlerFunc {
 			utils.ReturnError(writer, err.Error(), http.StatusUnauthorized)
 			return
 		}
-
-		seed := int64(69)
+		rand.Seed(time.Now().UnixNano())
+		randomNumber := rand.Intn(420) + 1
+		seed := int64(randomNumber)
 		chunkNeighborhood := terrains.CreateChunkNeighborhood(seed)
 		chunks := terrains.FlattenChunksArray(chunkNeighborhood)
 

@@ -19,12 +19,12 @@ const (
 	chunkPerGroup         = 2
 	groupsPerNeighborhood = 2
 	// Chunk Config
-	chunkDimension      = 1024
-	chunkHeight         = 256
 	heightmapResolution = 1025 // (129, 257, 469, 513, 769, 1025, 2049)
+	chunkDimension      = 1024 // must be one smaller than heightMap resolution
+	chunkHeight         = 128
 	alphamapResolution  = 1024
 	detailResolution    = 256
-	resolutionPerPatch  = 16
+	resolutionPerPatch  = 16 // https://docs.unity3d.com/ScriptReference/TerrainData.SetDetailResolution.html
 )
 
 func floatPtr(f float32) *float32 {
