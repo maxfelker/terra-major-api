@@ -9,17 +9,25 @@ import (
 )
 
 const (
-	alpha           = 1
-	beta            = 2
-	n               = 3
-	perlinFrequency = 0.0005 // Lower value for broader features
-	perlinAmplitude = 0.85   // Higher value for taller features
-
+	alpha            = 1
+	beta             = 2
+	n                = 3
+	perlinFrequency  = 0.0005 // Lower value for broader features
+	perlinAmplitude  = 0.85   // Higher value for taller features
 	chunkDimension   = 128
 	height           = 128
 	chunkCount       = 2
 	neighborhoodSize = 4
 )
+
+/*
+	public int HeightmapResolution = 1025; // (129, 257, 469, 513, 769, 1025, 2049)
+	public int AlphamapResolution = 1024;
+	public int DetailResolution = 256;
+	public int WorldDimensions = 1000;
+	public int TerrainDimension = 256;
+	public int TerrainHeight = 64;
+*/
 
 func floatPtr(f float32) *float32 {
 	return &f
@@ -44,7 +52,7 @@ func GenerateChunks(chunkCount, chunkDimension, height int, seed int64, offset s
 			}
 			newChunk := NewTerrainChunk(
 				position,
-				chunkDimension+1,
+				chunkDimension,
 				terrainHeight,
 				detailResolution,
 				resolutionPerPatch,
@@ -59,7 +67,8 @@ func GenerateChunks(chunkCount, chunkDimension, height int, seed int64, offset s
 }
 
 func NewTerrainChunk(position sandboxModels.Vector3, dimension, terrainHeight, detailResolution, resolutionPerPatch, heightmapRes, alphamapRes int, seed int64) *models.TerrainChunk {
-	heightmap := NewHeightmap(dimension, dimension, seed, position)
+	heightmapDimension := dimension + 1
+	heightmap := NewHeightmap(heightmapDimension, heightmapDimension, seed, position)
 	heightmapJSON, err := json.Marshal(heightmap)
 	if err != nil {
 		panic(err)
