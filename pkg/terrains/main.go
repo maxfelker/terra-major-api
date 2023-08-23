@@ -19,11 +19,11 @@ const (
 	chunkPerGroup         = 2
 	groupsPerNeighborhood = 2
 	// Chunk Config
-	heightmapResolution = 1025 // (129, 257, 469, 513, 769, 1025, 2049)
-	chunkDimension      = 1024 // must be one smaller than heightMap resolution
-	chunkHeight         = 128
+	heightmapResolution = 129 // (129, 257, 469, 513, 769, 1025, 2049)
+	chunkDimension      = 128 // must be one smaller than heightMap resolution
+	chunkHeight         = 32
 	alphamapResolution  = 1024
-	detailResolution    = 256
+	detailResolution    = 1024
 	resolutionPerPatch  = 16 // https://docs.unity3d.com/ScriptReference/TerrainData.SetDetailResolution.html
 )
 

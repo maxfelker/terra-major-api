@@ -13,6 +13,10 @@ require (
 )
 
 require (
+	github.com/Azure/azure-sdk-for-go v68.0.0+incompatible // indirect
+	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.7.0 // indirect
+	github.com/Azure/azure-sdk-for-go/sdk/data/azcosmos v0.3.5 // indirect
+	github.com/Azure/azure-sdk-for-go/sdk/internal v1.3.0 // indirect
 	github.com/aquilax/go-perlin v1.1.0 // indirect
 	github.com/bep/godartsass v1.2.0 // indirect
 	github.com/bep/godartsass/v2 v2.0.0 // indirect
