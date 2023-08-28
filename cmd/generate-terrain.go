@@ -1,16 +1,14 @@
 package main
 
 import (
-	"context"
+	"bufio"
 	"encoding/json"
 	"flag"
 	"fmt"
 	"math/rand"
-	"net/http"
+	"os"
 	"time"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/data/azcosmos"
-	"github.com/mw-felker/terra-major-api/pkg/core"
 	terrains "github.com/mw-felker/terra-major-api/pkg/terrains"
 )
 
@@ -24,7 +22,7 @@ func main() {
 		return
 	}
 
-	app := core.CreateApp()
+	startTime := time.Now()
 
 	rand.Seed(time.Now().UnixNano())
 	randomNumber := rand.Intn(420) + 1
@@ -32,40 +30,40 @@ func main() {
 	chunkNeighborhood := terrains.CreateChunkNeighborhood(seed)
 	chunks := terrains.FlattenChunksArray(chunkNeighborhood)
 
-	containerClient, err := app.NoSQL.NewContainer("chunks")
-	if err != nil {
-		fmt.Printf("Failed to get container client: %v\n", err)
-		return
-	}
-
-	pk := azcosmos.NewPartitionKeyString(sandboxId)
-	batch := containerClient.NewTransactionalBatch(pk)
-
 	for _, chunk := range chunks {
 		chunk.SandboxId = sandboxId
-		marshalled, err := json.Marshal(chunk)
-		if err != nil {
-			fmt.Printf("Failed to marshal chunk: %v\n", err)
-			return
-		}
-		batch.CreateItem(marshalled, nil)
 	}
-	ctx := context.Background()
-	batchResponse, err := containerClient.ExecuteTransactionalBatch(ctx, batch, nil)
+
+	timestamp := time.Now().Unix()
+	filename := fmt.Sprintf("chunks_%d.json", timestamp)
+
+	file, err := os.Create(filename)
 	if err != nil {
-		fmt.Printf("Failed to execute transactional batch: %v\n", err)
+		fmt.Printf("Failed to create JSON file: %v\n", err)
+		return
+	}
+	defer file.Close()
+
+	bufferedWriter := bufio.NewWriter(file)
+	encoder := json.NewEncoder(bufferedWriter)
+	err = encoder.Encode(chunks)
+	if err != nil {
+		fmt.Printf("Failed to write chunks to JSON file: %v\n", err)
+		return
+	}
+	bufferedWriter.Flush()
+
+	fileInfo, err := os.Stat(filename)
+	if err != nil {
+		fmt.Printf("Failed to get file info: %v\n", err)
 		return
 	}
 
-	if batchResponse.Success {
-		for index, operation := range batchResponse.OperationResults {
-			fmt.Printf("Operation %v completed with status code %v consumed %v RU\n", index, operation.StatusCode, operation.RequestCharge)
-		}
-	} else {
-		for index, operation := range batchResponse.OperationResults {
-			if operation.StatusCode != http.StatusFailedDependency {
-				fmt.Printf("Transaction failed due to operation %v which failed with status code %v\n", index, operation.StatusCode)
-			}
-		}
-	}
+	endTime := time.Now()
+	elapsedTime := float64(int(endTime.Sub(startTime).Seconds()*10+0.5)) / 10
+	fileSizeMB := float64(fileInfo.Size()) / 1048576.0
+
+	fmt.Printf("Number of chunks created: %d\n", len(chunks))
+	fmt.Printf("Time taken to create the file: %.1fs\n", elapsedTime)
+	fmt.Printf("Size of the file: %.2f MB\n", fileSizeMB)
 }

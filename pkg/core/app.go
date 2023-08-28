@@ -88,7 +88,8 @@ func CreateApp() *App {
 	checkDbExistsAndCreate(dbConnection, POSTGRES_DATABASE)
 
 	db := connectToDb(POSTGRES_DATABASE)
-	db.Logger.LogMode(logger.Silent)
+	db.Logger = logger.Default.LogMode(logger.Silent)
+	//db.Logger.LogMode(logger.Silent)
 
 	noSqlClient, error := connectToCosmos()
 	if error != nil {
