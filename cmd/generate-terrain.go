@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"math/rand"
 	"os"
 	"time"
 
@@ -22,10 +21,7 @@ func main() {
 	}
 
 	startTime := time.Now()
-
-	rand.Seed(time.Now().UnixNano())
-	randomNumber := rand.Intn(420) + 1
-	seed := int64(randomNumber)
+	seed := int64(13)
 	chunkNeighborhood := terrains.CreateChunkNeighborhood(seed)
 	chunks := terrains.FlattenChunksArray(chunkNeighborhood)
 

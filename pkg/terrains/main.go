@@ -17,14 +17,14 @@ const (
 	perlinFrequency = 0.0005 // Lower value for broader features
 	perlinAmplitude = 0.85   // Higher value for taller features
 	// Grouping
-	chunkPerGroup         = 2
+	chunkPerGroup         = 4
 	groupsPerNeighborhood = 2
 	// Chunk Config
-	heightmapResolution = 1025 // (129, 257, 469, 513, 769, 1025, 2049)
-	chunkDimension      = 1024 // must be one smaller than heightMap resolution
+	heightmapResolution = 257 // (129, 257, 469, 513, 769, 1025, 2049)
+	chunkDimension      = 256 // must be one smaller than heightMap resolution
 	chunkHeight         = 128
-	alphamapResolution  = 1024
-	detailResolution    = 1024
+	alphamapResolution  = 256
+	detailResolution    = 256
 	resolutionPerPatch  = 16 // https://docs.unity3d.com/ScriptReference/TerrainData.SetDetailResolution.html
 )
 
