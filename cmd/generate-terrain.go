@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -34,36 +33,16 @@ func main() {
 		chunk.SandboxId = sandboxId
 	}
 
-	timestamp := time.Now().Unix()
-	filename := fmt.Sprintf("chunks_%d.json", timestamp)
-
-	file, err := os.Create(filename)
+	encoder := json.NewEncoder(os.Stdout)
+	err := encoder.Encode(chunks)
 	if err != nil {
-		fmt.Printf("Failed to create JSON file: %v\n", err)
-		return
-	}
-	defer file.Close()
-
-	bufferedWriter := bufio.NewWriter(file)
-	encoder := json.NewEncoder(bufferedWriter)
-	err = encoder.Encode(chunks)
-	if err != nil {
-		fmt.Printf("Failed to write chunks to JSON file: %v\n", err)
-		return
-	}
-	bufferedWriter.Flush()
-
-	fileInfo, err := os.Stat(filename)
-	if err != nil {
-		fmt.Printf("Failed to get file info: %v\n", err)
+		fmt.Printf("Failed to write chunks to JSON output: %v\n", err)
 		return
 	}
 
 	endTime := time.Now()
 	elapsedTime := float64(int(endTime.Sub(startTime).Seconds()*10+0.5)) / 10
-	fileSizeMB := float64(fileInfo.Size()) / 1048576.0
 
-	fmt.Printf("Number of chunks created: %d\n", len(chunks))
-	fmt.Printf("Time taken to create the file: %.1fs\n", elapsedTime)
-	fmt.Printf("Size of the file: %.2f MB\n", fileSizeMB)
+	fmt.Fprintf(os.Stderr, "Number of chunks created: %d\n", len(chunks))
+	fmt.Fprintf(os.Stderr, "Time taken to create the data: %.1fs\n", elapsedTime)
 }

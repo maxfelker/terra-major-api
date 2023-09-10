@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 
 	"github.com/aquilax/go-perlin"
+	"github.com/google/uuid"
 	sandboxModels "github.com/mw-felker/terra-major-api/pkg/sandboxes/models"
 	models "github.com/mw-felker/terra-major-api/pkg/terrains/models"
 )
@@ -16,8 +17,8 @@ const (
 	perlinFrequency = 0.0005 // Lower value for broader features
 	perlinAmplitude = 0.85   // Higher value for taller features
 	// Grouping
-	chunkPerGroup         = 5
-	groupsPerNeighborhood = 10
+	chunkPerGroup         = 2
+	groupsPerNeighborhood = 2
 	// Chunk Config
 	heightmapResolution = 1025 // (129, 257, 469, 513, 769, 1025, 2049)
 	chunkDimension      = 1024 // must be one smaller than heightMap resolution
@@ -67,6 +68,7 @@ func NewTerrainChunk(position sandboxModels.Vector3, dimension, terrainHeight, d
 	}
 
 	return &models.TerrainChunk{
+		ID:                  uuid.New().String(),
 		Position:            position,
 		Dimension:           dimension,
 		Height:              terrainHeight,

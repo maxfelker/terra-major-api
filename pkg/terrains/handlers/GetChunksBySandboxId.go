@@ -8,7 +8,7 @@ import (
 
 	authClient "github.com/mw-felker/terra-major-api/pkg/auth/client"
 	"github.com/mw-felker/terra-major-api/pkg/core"
-	models "github.com/mw-felker/terra-major-api/pkg/terrains/models"
+	"github.com/mw-felker/terra-major-api/pkg/terrains"
 	utils "github.com/mw-felker/terra-major-api/pkg/utils"
 )
 
@@ -20,12 +20,12 @@ func GetChunksBySandboxId(app *core.App) http.HandlerFunc {
 			return
 		}
 
-		var chunks []models.TerrainChunk
-		result := app.DB.Where("sandbox_id = ?", claims.SandboxId).Find(&chunks)
+		seed := int64(3)
+		chunkNeighborhood := terrains.CreateChunkNeighborhood(seed)
+		chunks := terrains.FlattenChunksArray(chunkNeighborhood)
 
-		if result.Error != nil {
-			utils.ReturnError(writer, result.Error.Error(), http.StatusInternalServerError)
-			return
+		for _, chunk := range chunks {
+			chunk.SandboxId = claims.SandboxId
 		}
 
 		var buf bytes.Buffer
