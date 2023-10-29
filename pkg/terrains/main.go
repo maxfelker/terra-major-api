@@ -17,14 +17,14 @@ const (
 	perlinFrequency = 0.0005 // Lower value for broader features
 	perlinAmplitude = 0.85   // Higher value for taller features
 	// Grouping
-	chunkPerGroup         = 4
+	chunkPerGroup         = 2
 	groupsPerNeighborhood = 2
 	// Chunk Config
-	heightmapResolution = 257 // (129, 257, 469, 513, 769, 1025, 2049)
-	chunkDimension      = 256 // must be one smaller than heightMap resolution
+	heightmapResolution = 129 // (129, 257, 469, 513, 769, 1025, 2049)
+	chunkDimension      = 128 // must be one smaller than heightMap resolution
 	chunkHeight         = 128
-	alphamapResolution  = 256
-	detailResolution    = 256
+	alphamapResolution  = 128
+	detailResolution    = 128
 	resolutionPerPatch  = 16 // https://docs.unity3d.com/ScriptReference/TerrainData.SetDetailResolution.html
 )
 
@@ -98,56 +98,4 @@ func NewHeightmap(width, depth int, seed int64, pos sandboxModels.Vector3) model
 	}
 
 	return heightmap
-}
-
-func CreateChunkNeighborhood(seed int64) *models.ChunkNeighborhood {
-	groups := GenerateChunkGroups(seed)
-	return &models.ChunkNeighborhood{
-		Position: sandboxModels.Vector3{
-			X: floatPtr(0),
-			Y: floatPtr(0),
-			Z: floatPtr(0),
-		},
-		Groups: groups,
-	}
-}
-
-func CreateChunkGroup(seed int64, offset sandboxModels.Vector3) *models.ChunkGroup {
-	chunks := GenerateChunks(chunkPerGroup, chunkDimension, chunkHeight, seed, offset)
-	return &models.ChunkGroup{
-		Position: sandboxModels.Vector3{
-			X: floatPtr(0),
-			Y: floatPtr(0),
-			Z: floatPtr(0),
-		},
-		Chunks: chunks,
-	}
-}
-
-func GenerateChunkGroups(seed int64) []*models.ChunkGroup {
-	var groups []*models.ChunkGroup
-	halfSize := groupsPerNeighborhood / 2
-	for i := -halfSize; i < halfSize; i++ {
-		for j := -halfSize; j < halfSize; j++ {
-			groupX := float32(i * chunkPerGroup * chunkDimension)
-			groupZ := float32(j * chunkPerGroup * chunkDimension)
-			group := CreateChunkGroup(seed, sandboxModels.Vector3{
-				X: &groupX,
-				Y: floatPtr(0),
-				Z: &groupZ,
-			})
-			groups = append(groups, group)
-		}
-	}
-	return groups
-}
-
-func FlattenChunksArray(neighborhood *models.ChunkNeighborhood) []*models.TerrainChunk {
-	var allChunks []*models.TerrainChunk
-	for _, group := range neighborhood.Groups {
-		for _, chunk := range group.Chunks {
-			allChunks = append(allChunks, chunk)
-		}
-	}
-	return allChunks
 }

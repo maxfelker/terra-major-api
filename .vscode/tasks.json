@@ -1,0 +1,26 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Build and run dev service locally",
+        "type": "shell",
+        "command": "docker compose up --build dev",
+        "problemMatcher": [],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        }
+      },
+      {
+        "label": "Build and run release service locally",
+        "type": "shell",
+        "command": "docker compose up --build release",
+        "problemMatcher": [],
+        "group": {
+          "kind": "test",
+          "isDefault": false
+        }
+      }
+    ]
+  }
+  

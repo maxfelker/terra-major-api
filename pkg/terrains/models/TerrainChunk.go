@@ -20,6 +20,12 @@ type TerrainChunk struct {
 	ResolutionPerPatch  int                   `gorm:"type:int;not null" json:"resolutionPerPatch"`
 	HeightmapResolution int                   `gorm:"type:int;not null" json:"heightmapResolution"`
 	AlphamapResolution  int                   `gorm:"type:int;not null" json:"alphamapResolution"`
+	PerlinSeed          int64                 `gorm:"type:int;not null" json:"perlinSeed"`
+	PerlinAlpha         float32               `gorm:"type:float;not null" json:"perlinAlpha"`
+	PerlinBeta          float32               `gorm:"type:float;not null" json:"perlinBeta"`
+	PerlinN             float32               `gorm:"type:float;not null" json:"perlinN"`
+	PerlinAmplitude     float32               `gorm:"type:float;not null" json:"perlinAmplitude"`
+	PerlinFrequency     float32               `gorm:"type:float;not null" json:"perlinFrequency"`
 	Heightmap           string                `gorm:"type:text" json:"heightmap"`
 	Created             time.Time             `gorm:"autoCreateTime" json:"created"`
 	Updated             time.Time             `gorm:"autoUpdateTime" json:"updated"`
