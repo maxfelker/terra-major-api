@@ -13,21 +13,20 @@ import (
 
 const (
 	// Heightmap noise
-	seed            = int64(13)
-	alpha           = 1
-	beta            = 2
-	n               = 3
-	perlinFrequency = 0.0005 // Lower value for broader features
-	perlinAmplitude = 0.85   // Higher value for taller features
+	seed       = 1004
+	frequency  = 0.01  // Lower value for broader features
+	gain       = 0.001 // Higher value for taller features
+	octaves    = 3
+	lacunarity = 2.0
 	// Grouping
 	chunkPerGroup         = 2
 	groupsPerNeighborhood = 2
 	// Chunk Config
-	heightmapResolution = 1025 // (129, 257, 469, 513, 769, 1025, 2049)
-	chunkDimension      = 1024 // must be one smaller than heightMap resolution
+	heightmapResolution = 513 // (129, 257, 469, 513, 769, 1025, 2049)
+	chunkDimension      = 512 // must be one smaller than heightMap resolution
 	chunkHeight         = 256
-	alphamapResolution  = 1024
-	detailResolution    = 1024
+	alphamapResolution  = 512
+	detailResolution    = 512
 	resolutionPerPatch  = 16 // https://docs.unity3d.com/ScriptReference/TerrainData.SetDetailResolution.html
 )
 
@@ -88,12 +87,11 @@ func GenerateChunks(offset sandboxModels.Vector3) []*terrainModels.TerrainChunk 
 				ResolutionPerPatch:  resolutionPerPatch,
 				HeightmapResolution: heightmapResolution,
 				AlphamapResolution:  alphamapResolution,
-				PerlinSeed:          seed,
-				PerlinAlpha:         alpha,
-				PerlinBeta:          beta,
-				PerlinN:             n,
-				PerlinAmplitude:     perlinAmplitude,
-				PerlinFrequency:     perlinFrequency,
+				Seed:                seed,
+				Frequency:           frequency,
+				Gain:                gain,
+				Octaves:             octaves,
+				Lacunarity:          lacunarity,
 			}
 			chunks = append(chunks, newChunk)
 		}
