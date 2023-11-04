@@ -13,11 +13,11 @@ import (
 
 const (
 	// Heightmap noise
-	seed       = 1004
-	frequency  = 0.01  // Lower value for broader features
-	gain       = 0.001 // Higher value for taller features
+	seed       = 2000
+	frequency  = 0.0005 // Lower value for broader features
+	gain       = 0.001  // Higher value for taller features
 	octaves    = 3
-	lacunarity = 2.0
+	lacunarity = 1
 	// Grouping
 	chunkPerGroup         = 2
 	groupsPerNeighborhood = 2
