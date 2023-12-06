@@ -23,7 +23,7 @@ type TerrainChunk struct {
 	Seed                int                   `gorm:"type:int;not null" json:"seed"`
 	Frequency           float32               `gorm:"type:float;not null" json:"frequency"`
 	Gain                float32               `gorm:"type:float;not null" json:"gain"`
-	Octaves             float32               `gorm:"type:float;not null" json:"octaves"`
+	Octaves             int                   `gorm:"type:float;not null" json:"octaves"`
 	Lacunarity          float32               `gorm:"type:float;not null" json:"lacunarity"`
 	Created             time.Time             `gorm:"autoCreateTime" json:"created"`
 	Updated             time.Time             `gorm:"autoUpdateTime" json:"updated"`
