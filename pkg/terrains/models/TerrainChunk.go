@@ -20,7 +20,7 @@ type TerrainChunk struct {
 	ResolutionPerPatch  int                   `gorm:"type:int;not null" json:"resolutionPerPatch"`
 	HeightmapResolution int                   `gorm:"type:int;not null" json:"heightmapResolution"`
 	AlphamapResolution  int                   `gorm:"type:int;not null" json:"alphamapResolution"`
-	Seed                int64                 `gorm:"type:int;not null" json:"seed"`
+	Seed                int                   `gorm:"type:int;not null" json:"seed"`
 	Frequency           float32               `gorm:"type:float;not null" json:"frequency"`
 	Gain                float32               `gorm:"type:float;not null" json:"gain"`
 	Octaves             float32               `gorm:"type:float;not null" json:"octaves"`

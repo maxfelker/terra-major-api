@@ -9,6 +9,7 @@ import (
 	characters "github.com/mw-felker/terra-major-api/pkg/characters/models"
 	"github.com/mw-felker/terra-major-api/pkg/core"
 	sandboxes "github.com/mw-felker/terra-major-api/pkg/sandboxes/models"
+	"github.com/mw-felker/terra-major-api/pkg/terrains"
 	utils "github.com/mw-felker/terra-major-api/pkg/utils"
 )
 
@@ -53,6 +54,14 @@ func CreateCharacter(app *core.App) http.HandlerFunc {
 		sandboxResult := app.DB.Create(&newSandbox)
 		if sandboxResult.Error != nil {
 			utils.ReturnError(writer, sandboxResult.Error.Error())
+			return
+		}
+
+		chunks := terrains.GenerateChunksForSandbox(newSandbox.ID)
+
+		chunkCreateResult := app.DB.Create(&chunks)
+		if chunkCreateResult.Error != nil {
+			http.Error(writer, chunkCreateResult.Error.Error(), http.StatusInternalServerError)
 			return
 		}
 

@@ -5,7 +5,7 @@ import (
 	"errors"
 	"net/http"
 
-	authClient "github.com/mw-felker/terra-major-api/pkg/auth/client"
+	"github.com/gorilla/mux"
 	"github.com/mw-felker/terra-major-api/pkg/core"
 	terrainModels "github.com/mw-felker/terra-major-api/pkg/terrains/models"
 	utils "github.com/mw-felker/terra-major-api/pkg/utils"
@@ -15,14 +15,12 @@ import (
 
 func GetChunksBySandboxId(app *core.App) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
-		claims, err := authClient.ParseAndValidateToken(request)
-		if err != nil {
-			utils.ReturnError(writer, err.Error(), http.StatusUnauthorized)
-			return
-		}
+
+		vars := mux.Vars(request)
+		sandboxId := vars["sandboxId"]
 
 		var chunks []terrainModels.TerrainChunk
-		result := app.DB.Find(&chunks, "sandbox_id = ?", claims.SandboxId)
+		result := app.DB.Find(&chunks, "sandbox_id = ?", sandboxId)
 
 		if result.Error != nil {
 			if errors.Is(result.Error, gorm.ErrRecordNotFound) {

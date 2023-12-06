@@ -1,42 +1,58 @@
 package terrains
 
 import (
-	"encoding/json"
+	"log"
 
-	"github.com/aquilax/go-perlin"
 	"github.com/google/uuid"
 	sandboxModels "github.com/mw-felker/terra-major-api/pkg/sandboxes/models"
-	models "github.com/mw-felker/terra-major-api/pkg/terrains/models"
+	terrainModels "github.com/mw-felker/terra-major-api/pkg/terrains/models"
 )
 
 const (
 	// Heightmap noise
-	alpha           = 1
-	beta            = 2
-	n               = 3
-	perlinFrequency = 0.0005 // Lower value for broader features
-	perlinAmplitude = 0.85   // Higher value for taller features
+	seed       = 1004
+	frequency  = 0.01  // Lower value for broader features
+	gain       = 0.001 // Higher value for taller features
+	octaves    = 3
+	lacunarity = 2.0
 	// Grouping
 	chunkPerGroup         = 2
 	groupsPerNeighborhood = 2
 	// Chunk Config
-	heightmapResolution = 129 // (129, 257, 469, 513, 769, 1025, 2049)
-	chunkDimension      = 128 // must be one smaller than heightMap resolution
-	chunkHeight         = 128
-	alphamapResolution  = 128
-	detailResolution    = 128
+	heightmapResolution = 513 // (129, 257, 469, 513, 769, 1025, 2049)
+	chunkDimension      = 512 // must be one smaller than heightMap resolution
+	chunkHeight         = 256
+	alphamapResolution  = 512
+	detailResolution    = 512
 	resolutionPerPatch  = 16 // https://docs.unity3d.com/ScriptReference/TerrainData.SetDetailResolution.html
 )
+
+func GenerateChunksForSandbox(sandboxId string) []*terrainModels.TerrainChunk {
+
+	if sandboxId == "" {
+		log.Fatalln("Please provide a sandbox ID when storing chunks")
+		return nil
+	}
+
+	chunkNeighborhood := createChunkNeighborhood()
+	chunks := flattenChunksArray(chunkNeighborhood)
+
+	for _, chunk := range chunks {
+		chunk.SandboxId = sandboxId
+	}
+
+	return chunks
+}
 
 func floatPtr(f float32) *float32 {
 	return &f
 }
 
-func GenerateChunks(chunkCount, chunkDimension, height int, seed int64, offset sandboxModels.Vector3) []*models.TerrainChunk {
-	var terrainHeight = height
-	var chunks []*models.TerrainChunk
-	for i := 0; i < chunkCount; i++ {
-		for j := 0; j < chunkCount; j++ {
+func generateChunks(offset sandboxModels.Vector3) []*terrainModels.TerrainChunk {
+	var terrainHeight = chunkHeight
+	var chunks []*terrainModels.TerrainChunk
+	for i := 0; i < chunkPerGroup; i++ {
+		for j := 0; j < chunkPerGroup; j++ {
 			globalX := float32(i*chunkDimension) + *offset.X
 			globalZ := float32(j*chunkDimension) + *offset.Z
 			position := sandboxModels.Vector3{
@@ -44,58 +60,75 @@ func GenerateChunks(chunkCount, chunkDimension, height int, seed int64, offset s
 				Y: floatPtr(0),
 				Z: &globalZ,
 			}
-			newChunk := NewTerrainChunk(
-				position,
-				chunkDimension,
-				terrainHeight,
-				detailResolution,
-				resolutionPerPatch,
-				heightmapResolution,
-				alphamapResolution,
-				seed,
-			)
+			newChunk := &terrainModels.TerrainChunk{
+				ID:                  uuid.New().String(),
+				Position:            position,
+				Dimension:           chunkDimension,
+				Height:              terrainHeight,
+				DetailResolution:    detailResolution,
+				ResolutionPerPatch:  resolutionPerPatch,
+				HeightmapResolution: heightmapResolution,
+				AlphamapResolution:  alphamapResolution,
+				Seed:                seed,
+				Frequency:           frequency,
+				Gain:                gain,
+				Octaves:             octaves,
+				Lacunarity:          lacunarity,
+			}
 			chunks = append(chunks, newChunk)
 		}
 	}
 	return chunks
 }
 
-func NewTerrainChunk(position sandboxModels.Vector3, dimension, terrainHeight, detailResolution, resolutionPerPatch, heightmapRes, alphamapRes int, seed int64) *models.TerrainChunk {
-	heightmap := NewHeightmap(heightmapRes, heightmapRes, seed, position)
-	heightmapJSON, err := json.Marshal(heightmap)
-	if err != nil {
-		panic(err)
-	}
-
-	return &models.TerrainChunk{
-		ID:                  uuid.New().String(),
-		Position:            position,
-		Dimension:           dimension,
-		Height:              terrainHeight,
-		DetailResolution:    detailResolution,
-		ResolutionPerPatch:  resolutionPerPatch,
-		HeightmapResolution: heightmapRes,
-		AlphamapResolution:  alphamapRes,
-		Heightmap:           string(heightmapJSON),
+func createChunkNeighborhood() *terrainModels.ChunkNeighborhood {
+	groups := generateChunkGroups()
+	return &terrainModels.ChunkNeighborhood{
+		Position: sandboxModels.Vector3{
+			X: floatPtr(0),
+			Y: floatPtr(0),
+			Z: floatPtr(0),
+		},
+		Groups: groups,
 	}
 }
 
-func NewHeightmap(width, depth int, seed int64, pos sandboxModels.Vector3) models.Heightmap {
-	heightmap := make(models.Heightmap, depth)
-	for i := range heightmap {
-		heightmap[i] = make([]float64, width)
+func createChunkGroup(offset sandboxModels.Vector3) *terrainModels.ChunkGroup {
+	chunks := generateChunks(offset)
+	return &terrainModels.ChunkGroup{
+		Position: sandboxModels.Vector3{
+			X: floatPtr(0),
+			Y: floatPtr(0),
+			Z: floatPtr(0),
+		},
+		Chunks: chunks,
 	}
+}
 
-	perlin := perlin.NewPerlin(alpha, beta, n, seed)
-
-	for y := 0; y < depth; y++ {
-		for x := 0; x < width; x++ {
-			globalX := float64(*pos.X) + float64(x)
-			globalY := float64(*pos.Z) + float64(y)
-			noiseValue := perlin.Noise2D(globalX*perlinFrequency, globalY*perlinFrequency)
-			heightmap[y][x] = perlinAmplitude * noiseValue
+func generateChunkGroups() []*terrainModels.ChunkGroup {
+	var groups []*terrainModels.ChunkGroup
+	halfSize := groupsPerNeighborhood / 2
+	for i := -halfSize; i < halfSize; i++ {
+		for j := -halfSize; j < halfSize; j++ {
+			groupX := float32(i * chunkPerGroup * chunkDimension)
+			groupZ := float32(j * chunkPerGroup * chunkDimension)
+			group := createChunkGroup(sandboxModels.Vector3{
+				X: &groupX,
+				Y: floatPtr(0),
+				Z: &groupZ,
+			})
+			groups = append(groups, group)
 		}
 	}
+	return groups
+}
 
-	return heightmap
+func flattenChunksArray(neighborhood *terrainModels.ChunkNeighborhood) []*terrainModels.TerrainChunk {
+	var allChunks []*terrainModels.TerrainChunk
+	for _, group := range neighborhood.Groups {
+		for _, chunk := range group.Chunks {
+			allChunks = append(allChunks, chunk)
+		}
+	}
+	return allChunks
 }
