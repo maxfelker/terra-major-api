@@ -9,9 +9,9 @@ import (
 )
 
 const (
-	chunksPerGeneration = 32
-	seed                = 1004
-	frequency           = 0.01
+	chunksPerGeneration = 100
+	seed                = 1920
+	frequency           = 0.005
 	gain                = 0.001
 	octaves             = 3
 	lacunarity          = 2.0

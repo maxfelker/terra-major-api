@@ -60,6 +60,11 @@ func GetChunksBySandboxId(app *core.App) http.HandlerFunc {
 			return
 		}
 
+		if len(chunks) == 0 {
+			http.Error(writer, "", http.StatusNotFound)
+			return
+		}
+
 		response, err := json.Marshal(chunks)
 		if err != nil {
 			utils.ReturnError(writer, err.Error(), http.StatusInternalServerError)
