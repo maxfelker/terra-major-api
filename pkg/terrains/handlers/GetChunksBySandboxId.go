@@ -45,7 +45,7 @@ func GetChunksBySandboxId(app *core.App) http.HandlerFunc {
 			return
 		}
 
-		var chunks []terrainModels.TerrainChunk
+		var chunks []terrainModels.TerrainChunkConfig
 		result := app.DB.Raw(`
 			SELECT * FROM terrain_chunks
 			WHERE 

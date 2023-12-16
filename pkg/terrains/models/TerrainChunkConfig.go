@@ -10,7 +10,7 @@ import (
 
 type Heightmap [][]float64
 
-type TerrainChunk struct {
+type TerrainChunkConfig struct {
 	ID                  string                `gorm:"type:uuid;primary_key;unique;" json:"id"`
 	SandboxId           string                `gorm:"type:uuid;not null;" json:"sandboxId"`
 	Position            sandboxModels.Vector3 `gorm:"type:jsonb;not null" json:"position"`
@@ -29,7 +29,7 @@ type TerrainChunk struct {
 	Updated             time.Time             `gorm:"autoUpdateTime" json:"updated"`
 }
 
-func (chunk *TerrainChunk) BeforeCreate(tx *gorm.DB) (err error) {
+func (chunk *TerrainChunkConfig) BeforeCreate(tx *gorm.DB) (err error) {
 	chunk.ID = uuid.New().String()
 	return
 }

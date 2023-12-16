@@ -23,7 +23,7 @@ const (
 	resolutionPerPatch  = 16
 )
 
-func GenerateChunksForSandbox(sandboxId string) []*terrainModels.TerrainChunk {
+func GenerateChunksForSandbox(sandboxId string) []*terrainModels.TerrainChunkConfig {
 	if sandboxId == "" {
 		log.Fatalln("Please provide a sandbox ID when storing chunks")
 		return nil
@@ -37,9 +37,9 @@ func floatPtr(f float32) *float32 {
 	return &f
 }
 
-func generateChunks(sandboxId string) []*terrainModels.TerrainChunk {
+func generateChunks(sandboxId string) []*terrainModels.TerrainChunkConfig {
 	var terrainHeight = chunkHeight
-	var chunks []*terrainModels.TerrainChunk
+	var chunks []*terrainModels.TerrainChunkConfig
 	gridSize := int(chunksPerGeneration / 2)
 	offset := int(gridSize / 2)
 
@@ -52,7 +52,7 @@ func generateChunks(sandboxId string) []*terrainModels.TerrainChunk {
 				Y: floatPtr(0),
 				Z: &globalZ,
 			}
-			newChunk := &terrainModels.TerrainChunk{
+			newChunk := &terrainModels.TerrainChunkConfig{
 				ID:                  uuid.New().String(),
 				Position:            position,
 				Dimension:           chunkDimension,

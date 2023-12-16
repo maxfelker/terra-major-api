@@ -25,7 +25,7 @@ func seedDb(app *core.App) {
 	app.DB.AutoMigrate(&characterModels.Character{})
 	app.DB.AutoMigrate(&sandboxModels.Sandbox{})
 	app.DB.AutoMigrate(&sandboxModels.Instance{})
-	app.DB.AutoMigrate(&terrainModels.TerrainChunk{})
+	app.DB.AutoMigrate(&terrainModels.TerrainChunkConfig{})
 }
 
 func main() {
