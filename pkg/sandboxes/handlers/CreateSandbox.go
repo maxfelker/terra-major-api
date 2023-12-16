@@ -2,20 +2,34 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strings"
 
+	authClient "github.com/mw-felker/terra-major-api/pkg/auth/client"
 	"github.com/mw-felker/terra-major-api/pkg/core"
 	models "github.com/mw-felker/terra-major-api/pkg/sandboxes/models"
+	"github.com/mw-felker/terra-major-api/pkg/terrains"
+	utils "github.com/mw-felker/terra-major-api/pkg/utils"
 )
 
 func CreateSandbox(app *core.App) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
+
+		claims, claimsError := authClient.ParseAndValidateToken(request)
+		if claimsError != nil {
+			utils.ReturnError(writer, claimsError.Error(), http.StatusUnauthorized)
+			return
+		}
+
+		accountId := claims.AccountId
+		//characterId := claims.CharacterId
+
 		decoder := json.NewDecoder(request.Body)
 		var newSandbox models.Sandbox
-		err := decoder.Decode(&newSandbox)
-		if err != nil {
-			http.Error(writer, err.Error(), http.StatusBadRequest)
+		decoderError := decoder.Decode(&newSandbox)
+		if decoderError != nil {
+			http.Error(writer, decoderError.Error(), http.StatusBadRequest)
 			return
 		}
 
@@ -24,13 +38,25 @@ func CreateSandbox(app *core.App) http.HandlerFunc {
 			return
 		}
 
+		newSandbox.AccountId = accountId
+
 		result := app.DB.Create(&newSandbox)
 		if result.Error != nil {
 			if strings.Contains(result.Error.Error(), "23505") {
 				http.Error(writer, "A sandbox for this characterId already exists", http.StatusConflict)
 			} else {
-				http.Error(writer, result.Error.Error(), http.StatusInternalServerError)
 			}
+			return
+		}
+
+		chunks := terrains.GenerateChunksForSandbox(newSandbox.ID)
+
+		// Print the chunks to the command line
+		fmt.Println(chunks)
+
+		chunkCreateResult := app.DB.Create(&chunks)
+		if chunkCreateResult.Error != nil {
+			http.Error(writer, chunkCreateResult.Error.Error(), http.StatusInternalServerError)
 			return
 		}
 

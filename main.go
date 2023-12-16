@@ -14,6 +14,8 @@ import (
 	core "github.com/mw-felker/terra-major-api/pkg/core"
 	sandboxes "github.com/mw-felker/terra-major-api/pkg/sandboxes/handlers"
 	sandboxModels "github.com/mw-felker/terra-major-api/pkg/sandboxes/models"
+	terrains "github.com/mw-felker/terra-major-api/pkg/terrains/handlers"
+	terrainModels "github.com/mw-felker/terra-major-api/pkg/terrains/models"
 	utils "github.com/mw-felker/terra-major-api/pkg/utils"
 )
 
@@ -23,6 +25,7 @@ func seedDb(app *core.App) {
 	app.DB.AutoMigrate(&characterModels.Character{})
 	app.DB.AutoMigrate(&sandboxModels.Sandbox{})
 	app.DB.AutoMigrate(&sandboxModels.Instance{})
+	app.DB.AutoMigrate(&terrainModels.TerrainChunkConfig{})
 }
 
 func main() {
@@ -64,6 +67,8 @@ func main() {
 	app.Router.HandleFunc("/sandboxes/{sandboxId}/instances", sandboxes.CreateInstance(app)).Methods("POST")
 	app.Router.HandleFunc("/sandboxes/{sandboxId}/instances/{instanceId}", sandboxes.UpdateInstance(app)).Methods("PATCH")
 	app.Router.HandleFunc("/sandboxes/{sandboxId}/instances/{instanceId}", sandboxes.ArchiveInstance(app)).Methods("DELETE")
+
+	app.Router.HandleFunc("/sandboxes/{sandboxId}/chunks", terrains.GetChunksBySandboxId(app)).Methods("GET")
 
 	corsObj := handlers.CORS(handlers.AllowedMethods([]string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"}),
 		handlers.AllowedOrigins([]string{"*"}),

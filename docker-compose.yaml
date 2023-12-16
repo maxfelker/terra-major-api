@@ -6,11 +6,39 @@ x-db-variables: &db-variables
   POSTGRES_PASSWORD: $POSTGRES_PASSWORD
   POSTGRES_DATABASE: $POSTGRES_DATABASE
   POSTGRES_SSL: $POSTGRES_SSL
+  COSMOS_DB_HOST: $COSMOS_DB_HOST
+  COSMOS_DB_PORT: $COSMOS_DB_PORT
+  COSMOS_DB_PRIMARY_KEY: $COSMOS_DB_PRIMARY_KEY
+  COSMOS_DB_NAME: $COSMOS_DB_NAME
 
 networks:
   local:
 
 services:
+
+  cosmos:
+    container_name: cosmos
+    image: mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator
+    tty: true
+    restart: always
+    mem_limit: 3G
+    cpu_count: 4
+    environment:
+      - AZURE_COSMOS_EMULATOR_PARTITION_COUNT=5
+      - AZURE_COSMOS_EMULATOR_ENABLE_DATA_PERSISTENCE=true
+    ports:
+      - ${COSMOS_DB_PORT}:${COSMOS_DB_PORT}
+      - 10250-10255:10250-10255
+    hostname: cosmos
+    networks:
+      local:
+        aliases:
+          - cosmos
+    entrypoint: /bin/bash -c 
+    command: 
+       - |
+          apt-get update -y && apt-get install -y curl
+          /usr/local/bin/cosmos/start.sh
 
   postgres:
     image: postgres:15.3-alpine
@@ -33,7 +61,6 @@ services:
       dockerfile: ./Dockerfile.dev
     environment:
       <<: *db-variables
-      PKG: characters
       PORT: 8000
     networks:
       local:
@@ -56,4 +83,6 @@ services:
 
 volumes:
   postgres:
+    driver: local
+  cosmos:
     driver: local

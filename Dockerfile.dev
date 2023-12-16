@@ -1,10 +1,13 @@
 FROM golang:alpine  
 WORKDIR /app
+ENV GO111MODULE=on
+RUN go install github.com/cosmtrek/air@latest
 COPY main.go .
 COPY pkg/ pkg/
 COPY go.sum go.sum
 COPY go.mod go.mod
+RUN go mod tidy
 RUN go mod download
 RUN mkdir keys/
 RUN go run pkg/auth/pem/main.go /app/keys terra-major-client
-ENTRYPOINT go run main.go
+ENTRYPOINT air
