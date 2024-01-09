@@ -9,6 +9,8 @@ import (
 
 	models "github.com/mw-felker/terra-major-api/pkg/accounts/models"
 	"github.com/mw-felker/terra-major-api/pkg/core"
+	sandboxModels "github.com/mw-felker/terra-major-api/pkg/sandboxes/models"
+	terrains "github.com/mw-felker/terra-major-api/pkg/terrains"
 	"github.com/mw-felker/terra-major-api/pkg/utils"
 )
 
@@ -50,17 +52,42 @@ func CreateAccount(app *core.App) http.HandlerFunc {
 			return
 		}
 
-		result := app.DB.Create(&newAccount)
-		if result.Error != nil {
-			if strings.Contains(result.Error.Error(), "23505") {
+		creatAccountResult := app.DB.Create(&newAccount)
+
+		if creatAccountResult.Error != nil {
+			if strings.Contains(creatAccountResult.Error.Error(), "23505") {
 				utils.ReturnError(writer, "An account with this email already exists", http.StatusConflict)
 			} else {
-				utils.ReturnError(writer, result.Error.Error(), http.StatusInternalServerError)
+				utils.ReturnError(writer, creatAccountResult.Error.Error(), http.StatusInternalServerError)
 			}
 			return
 		}
 
-		response, e := json.Marshal(models.AccountResponse{BaseAccount: newAccount.BaseAccount})
+		var newSandbox sandboxModels.Sandbox
+		newSandbox.AccountId = newAccount.ID
+
+		sandboxCreateResult := app.DB.Create(&newSandbox)
+		if sandboxCreateResult.Error != nil {
+			if strings.Contains(sandboxCreateResult.Error.Error(), "23505") {
+				utils.ReturnError(writer, "A sandbox for this account already exists", http.StatusConflict)
+			} else {
+				utils.ReturnError(writer, sandboxCreateResult.Error.Error(), http.StatusInternalServerError)
+			}
+		}
+
+		chunks := terrains.GenerateChunksForSandbox(newSandbox.ID)
+
+		chunkCreateResult := app.DB.Create(&chunks)
+		if chunkCreateResult.Error != nil {
+			utils.ReturnError(writer, chunkCreateResult.Error.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		var accountResponse models.AccountResponse
+		accountResponse.BaseAccount = newAccount.BaseAccount
+		accountResponse.Sandbox = newSandbox
+
+		response, e := json.Marshal(accountResponse)
 		if e != nil {
 			utils.ReturnError(writer, e.Error(), http.StatusInternalServerError)
 			return

@@ -8,8 +8,6 @@ import (
 	authClient "github.com/mw-felker/terra-major-api/pkg/auth/client"
 	characters "github.com/mw-felker/terra-major-api/pkg/characters/models"
 	"github.com/mw-felker/terra-major-api/pkg/core"
-	sandboxes "github.com/mw-felker/terra-major-api/pkg/sandboxes/models"
-	"github.com/mw-felker/terra-major-api/pkg/terrains"
 	utils "github.com/mw-felker/terra-major-api/pkg/utils"
 )
 
@@ -41,27 +39,11 @@ func CreateCharacter(app *core.App) http.HandlerFunc {
 		}
 
 		newCharacter.AccountId = claims.AccountId
+		newCharacter.SandboxId = claims.SandboxId
 
 		result := app.DB.Create(&newCharacter)
 		if result.Error != nil {
 			utils.ReturnError(writer, result.Error.Error())
-			return
-		}
-
-		var newSandbox sandboxes.Sandbox
-		newSandbox.CharacterId = newCharacter.ID
-		newSandbox.AccountId = claims.AccountId
-		sandboxResult := app.DB.Create(&newSandbox)
-		if sandboxResult.Error != nil {
-			utils.ReturnError(writer, sandboxResult.Error.Error())
-			return
-		}
-
-		chunks := terrains.GenerateChunksForSandbox(newSandbox.ID)
-
-		chunkCreateResult := app.DB.Create(&chunks)
-		if chunkCreateResult.Error != nil {
-			http.Error(writer, chunkCreateResult.Error.Error(), http.StatusInternalServerError)
 			return
 		}
 

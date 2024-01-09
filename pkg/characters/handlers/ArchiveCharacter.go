@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"encoding/json"
 	"errors"
 	"net/http"
 
@@ -34,14 +33,8 @@ func ArchiveCharacter(app *core.App) http.HandlerFunc {
 			return
 		}
 
-		response, e := json.Marshal(character)
-		if e != nil {
-			http.Error(writer, e.Error(), http.StatusInternalServerError)
-			return
-		}
-
 		writer.Header().Set("Content-Type", "application/json")
 		writer.WriteHeader(http.StatusOK)
-		writer.Write(response)
+		writer.Write(nil)
 	}
 }

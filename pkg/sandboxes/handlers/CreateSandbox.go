@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -23,7 +22,6 @@ func CreateSandbox(app *core.App) http.HandlerFunc {
 		}
 
 		accountId := claims.AccountId
-		//characterId := claims.CharacterId
 
 		decoder := json.NewDecoder(request.Body)
 		var newSandbox models.Sandbox
@@ -33,36 +31,28 @@ func CreateSandbox(app *core.App) http.HandlerFunc {
 			return
 		}
 
-		if newSandbox.CharacterId == "" {
-			http.Error(writer, "characterId is required", http.StatusBadRequest)
-			return
-		}
-
 		newSandbox.AccountId = accountId
 
 		result := app.DB.Create(&newSandbox)
 		if result.Error != nil {
 			if strings.Contains(result.Error.Error(), "23505") {
-				http.Error(writer, "A sandbox for this characterId already exists", http.StatusConflict)
+				utils.ReturnError(writer, "A sandbox for this characterId already exists", http.StatusConflict)
 			} else {
+				utils.ReturnError(writer, result.Error.Error(), http.StatusInternalServerError)
 			}
-			return
 		}
 
 		chunks := terrains.GenerateChunksForSandbox(newSandbox.ID)
 
-		// Print the chunks to the command line
-		fmt.Println(chunks)
-
 		chunkCreateResult := app.DB.Create(&chunks)
 		if chunkCreateResult.Error != nil {
-			http.Error(writer, chunkCreateResult.Error.Error(), http.StatusInternalServerError)
+			utils.ReturnError(writer, chunkCreateResult.Error.Error(), http.StatusInternalServerError)
 			return
 		}
 
 		response, e := json.Marshal(newSandbox)
 		if e != nil {
-			http.Error(writer, e.Error(), http.StatusInternalServerError)
+			utils.ReturnError(writer, e.Error(), http.StatusInternalServerError)
 			return
 		}
 
