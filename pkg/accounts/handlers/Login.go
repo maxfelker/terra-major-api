@@ -9,6 +9,7 @@ import (
 	models "github.com/mw-felker/terra-major-api/pkg/accounts/models"
 	authClient "github.com/mw-felker/terra-major-api/pkg/auth/client"
 	"github.com/mw-felker/terra-major-api/pkg/core"
+	sandboxModels "github.com/mw-felker/terra-major-api/pkg/sandboxes/models"
 	"github.com/mw-felker/terra-major-api/pkg/utils"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -45,6 +46,12 @@ func Login(app *core.App) http.HandlerFunc {
 			return
 		}
 
+		var sandboxInDB sandboxModels.Sandbox
+		if querySandboxResult := app.DB.Where("account_id = ?", accountInDB.ID).First(&sandboxInDB); querySandboxResult.Error != nil {
+			utils.ReturnError(writer, "No sandbox for this account", http.StatusNotFound)
+			return
+		}
+
 		userPass := []byte(strings.TrimSpace(suppliedAccount.Password))
 		passInDb := []byte(accountInDB.Password)
 		mismatched := bcrypt.CompareHashAndPassword(passInDb, userPass)
@@ -53,7 +60,7 @@ func Login(app *core.App) http.HandlerFunc {
 			return
 		}
 
-		token := authClient.GenerateToken(accountInDB.ID, "", "")
+		token := authClient.GenerateToken(accountInDB.ID, sandboxInDB.ID, "")
 
 		response, e := json.Marshal(authClient.TokenResponse{Token: token})
 		if e != nil {

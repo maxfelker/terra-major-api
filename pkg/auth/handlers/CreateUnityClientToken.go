@@ -8,7 +8,6 @@ import (
 	authClient "github.com/mw-felker/terra-major-api/pkg/auth/client"
 	characters "github.com/mw-felker/terra-major-api/pkg/characters/models"
 	"github.com/mw-felker/terra-major-api/pkg/core"
-	sandboxes "github.com/mw-felker/terra-major-api/pkg/sandboxes/models"
 	"github.com/mw-felker/terra-major-api/pkg/utils"
 	"gorm.io/gorm"
 )
@@ -43,7 +42,7 @@ func CreateUnityClientToken(app *core.App) http.HandlerFunc {
 		}
 
 		var character characters.Character
-		characterResult := app.DB.First(&character, "id = ?", tokenPayload.CharacterId)
+		characterResult := app.DB.First(&character, "id = ? AND sandbox_id = ? AND account_id = ?", tokenPayload.CharacterId, claims.SandboxId, claims.AccountId)
 
 		if characterResult.Error != nil {
 			if errors.Is(characterResult.Error, gorm.ErrRecordNotFound) {
@@ -54,19 +53,7 @@ func CreateUnityClientToken(app *core.App) http.HandlerFunc {
 			return
 		}
 
-		var sandbox sandboxes.Sandbox
-		sandboxResult := app.DB.First(&sandbox, "character_id = ?", tokenPayload.CharacterId)
-
-		if sandboxResult.Error != nil {
-			if errors.Is(sandboxResult.Error, gorm.ErrRecordNotFound) {
-				utils.ReturnError(writer, "Sandbox not found", http.StatusNotFound)
-			} else {
-				utils.ReturnError(writer, sandboxResult.Error.Error(), http.StatusInternalServerError)
-			}
-			return
-		}
-
-		token := authClient.GenerateToken(claims.AccountId, sandbox.ID, tokenPayload.CharacterId)
+		token := authClient.GenerateToken(character.AccountId, character.SandboxId, character.ID)
 		response, err := json.Marshal(TokenResponse{
 			Token: token,
 		})

@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	sandboxModels "github.com/mw-felker/terra-major-api/pkg/sandboxes/models"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
@@ -23,6 +24,7 @@ type Account struct {
 
 type AccountResponse struct {
 	BaseAccount
+	Sandbox sandboxModels.Sandbox `json:"sandbox"`
 }
 
 func GeneratePassword(passwordText string) string {
