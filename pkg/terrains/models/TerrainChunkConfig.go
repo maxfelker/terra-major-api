@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	sandboxModels "github.com/mw-felker/terra-major-api/pkg/sandboxes/models"
+	sandboxModels "github.com/maxfelker/terra-major-api/pkg/sandboxes/models"
 	"gorm.io/gorm"
 )
 

@@ -1,4 +1,4 @@
-module github.com/mw-felker/terra-major-api
+module github.com/maxfelker/terra-major-api
 
 go 1.20
 

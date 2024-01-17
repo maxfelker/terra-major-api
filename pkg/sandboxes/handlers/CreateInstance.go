@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/mw-felker/terra-major-api/pkg/core"
-	models "github.com/mw-felker/terra-major-api/pkg/sandboxes/models"
+	"github.com/maxfelker/terra-major-api/pkg/core"
+	models "github.com/maxfelker/terra-major-api/pkg/sandboxes/models"
 )
 
 func CreateInstance(app *core.App) http.HandlerFunc {

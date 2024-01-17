@@ -6,10 +6,10 @@ import (
 	"net/mail"
 	"strings"
 
-	models "github.com/mw-felker/terra-major-api/pkg/accounts/models"
-	authClient "github.com/mw-felker/terra-major-api/pkg/auth/client"
-	"github.com/mw-felker/terra-major-api/pkg/core"
-	"github.com/mw-felker/terra-major-api/pkg/utils"
+	models "github.com/maxfelker/terra-major-api/pkg/accounts/models"
+	authClient "github.com/maxfelker/terra-major-api/pkg/auth/client"
+	"github.com/maxfelker/terra-major-api/pkg/core"
+	"github.com/maxfelker/terra-major-api/pkg/utils"
 )
 
 func CreateMyAccount(app *core.App) http.HandlerFunc {

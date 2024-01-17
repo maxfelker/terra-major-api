@@ -6,11 +6,11 @@ import (
 	"net/mail"
 	"strings"
 
-	models "github.com/mw-felker/terra-major-api/pkg/accounts/models"
-	authClient "github.com/mw-felker/terra-major-api/pkg/auth/client"
-	"github.com/mw-felker/terra-major-api/pkg/core"
-	sandboxModels "github.com/mw-felker/terra-major-api/pkg/sandboxes/models"
-	"github.com/mw-felker/terra-major-api/pkg/utils"
+	models "github.com/maxfelker/terra-major-api/pkg/accounts/models"
+	authClient "github.com/maxfelker/terra-major-api/pkg/auth/client"
+	"github.com/maxfelker/terra-major-api/pkg/core"
+	sandboxModels "github.com/maxfelker/terra-major-api/pkg/sandboxes/models"
+	"github.com/maxfelker/terra-major-api/pkg/utils"
 	"golang.org/x/crypto/bcrypt"
 )
 

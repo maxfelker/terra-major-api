@@ -6,10 +6,10 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
-	"github.com/mw-felker/terra-major-api/pkg/core"
-	sandboxesModels "github.com/mw-felker/terra-major-api/pkg/sandboxes/models"
-	terrainModels "github.com/mw-felker/terra-major-api/pkg/terrains/models"
-	utils "github.com/mw-felker/terra-major-api/pkg/utils"
+	"github.com/maxfelker/terra-major-api/pkg/core"
+	sandboxesModels "github.com/maxfelker/terra-major-api/pkg/sandboxes/models"
+	terrainModels "github.com/maxfelker/terra-major-api/pkg/terrains/models"
+	utils "github.com/maxfelker/terra-major-api/pkg/utils"
 )
 
 func GetChunksBySandboxId(app *core.App) http.HandlerFunc {
