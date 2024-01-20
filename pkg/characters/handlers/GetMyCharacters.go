@@ -6,10 +6,10 @@ import (
 	"encoding/json"
 	"net/http"
 
-	authClient "github.com/mw-felker/terra-major-api/pkg/auth/client"
-	models "github.com/mw-felker/terra-major-api/pkg/characters/models"
-	core "github.com/mw-felker/terra-major-api/pkg/core"
-	utils "github.com/mw-felker/terra-major-api/pkg/utils"
+	authClient "github.com/maxfelker/terra-major-api/pkg/auth/client"
+	models "github.com/maxfelker/terra-major-api/pkg/characters/models"
+	core "github.com/maxfelker/terra-major-api/pkg/core"
+	utils "github.com/maxfelker/terra-major-api/pkg/utils"
 )
 
 func GetMyCharacters(app *core.App) http.HandlerFunc {

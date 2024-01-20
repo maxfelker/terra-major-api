@@ -8,9 +8,9 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-	models "github.com/mw-felker/terra-major-api/pkg/accounts/models"
-	"github.com/mw-felker/terra-major-api/pkg/core"
-	utils "github.com/mw-felker/terra-major-api/pkg/utils"
+	models "github.com/maxfelker/terra-major-api/pkg/accounts/models"
+	"github.com/maxfelker/terra-major-api/pkg/core"
+	utils "github.com/maxfelker/terra-major-api/pkg/utils"
 	"gorm.io/gorm"
 )
 

@@ -5,10 +5,10 @@ import (
 	"errors"
 	"net/http"
 
-	authClient "github.com/mw-felker/terra-major-api/pkg/auth/client"
-	characters "github.com/mw-felker/terra-major-api/pkg/characters/models"
-	"github.com/mw-felker/terra-major-api/pkg/core"
-	"github.com/mw-felker/terra-major-api/pkg/utils"
+	authClient "github.com/maxfelker/terra-major-api/pkg/auth/client"
+	characters "github.com/maxfelker/terra-major-api/pkg/characters/models"
+	"github.com/maxfelker/terra-major-api/pkg/core"
+	"github.com/maxfelker/terra-major-api/pkg/utils"
 	"gorm.io/gorm"
 )
 
