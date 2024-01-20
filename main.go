@@ -37,8 +37,7 @@ func main() {
 	app.Router.HandleFunc("/login", accounts.Login(app)).Methods("POST")
 	app.Router.HandleFunc("/tokens", auth.CreateUnityClientToken(app)).Methods("POST")
 
-	// User-centric (me) routes
-	app.Router.HandleFunc("/signup", accounts.CreateMyAccount(app)).Methods("POST")
+	// User-centric (me/my) routes
 	app.Router.HandleFunc("/me", accounts.GetMyAccount(app)).Methods("GET")
 	app.Router.HandleFunc("/my/password", accounts.UpdatePassword(app)).Methods("PATCH")
 	app.Router.HandleFunc("/my/sandboxes", sandboxes.GetMySandboxes(app)).Methods("GET")
