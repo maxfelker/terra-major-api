@@ -6,17 +6,17 @@ import (
 
 	"github.com/gorilla/handlers"
 
-	accounts "github.com/mw-felker/terra-major-api/pkg/accounts/handlers"
-	accountModels "github.com/mw-felker/terra-major-api/pkg/accounts/models"
-	auth "github.com/mw-felker/terra-major-api/pkg/auth/handlers"
-	characters "github.com/mw-felker/terra-major-api/pkg/characters/handlers"
-	characterModels "github.com/mw-felker/terra-major-api/pkg/characters/models"
-	core "github.com/mw-felker/terra-major-api/pkg/core"
-	sandboxes "github.com/mw-felker/terra-major-api/pkg/sandboxes/handlers"
-	sandboxModels "github.com/mw-felker/terra-major-api/pkg/sandboxes/models"
-	terrains "github.com/mw-felker/terra-major-api/pkg/terrains/handlers"
-	terrainModels "github.com/mw-felker/terra-major-api/pkg/terrains/models"
-	utils "github.com/mw-felker/terra-major-api/pkg/utils"
+	accounts "github.com/maxfelker/terra-major-api/pkg/accounts/handlers"
+	accountModels "github.com/maxfelker/terra-major-api/pkg/accounts/models"
+	auth "github.com/maxfelker/terra-major-api/pkg/auth/handlers"
+	characters "github.com/maxfelker/terra-major-api/pkg/characters/handlers"
+	characterModels "github.com/maxfelker/terra-major-api/pkg/characters/models"
+	core "github.com/maxfelker/terra-major-api/pkg/core"
+	sandboxes "github.com/maxfelker/terra-major-api/pkg/sandboxes/handlers"
+	sandboxModels "github.com/maxfelker/terra-major-api/pkg/sandboxes/models"
+	terrains "github.com/maxfelker/terra-major-api/pkg/terrains/handlers"
+	terrainModels "github.com/maxfelker/terra-major-api/pkg/terrains/models"
+	utils "github.com/maxfelker/terra-major-api/pkg/utils"
 )
 
 func seedDb(app *core.App) {
@@ -37,8 +37,7 @@ func main() {
 	app.Router.HandleFunc("/login", accounts.Login(app)).Methods("POST")
 	app.Router.HandleFunc("/tokens", auth.CreateUnityClientToken(app)).Methods("POST")
 
-	// User-centric (me) routes
-	app.Router.HandleFunc("/signup", accounts.CreateMyAccount(app)).Methods("POST")
+	// User-centric (me/my) routes
 	app.Router.HandleFunc("/me", accounts.GetMyAccount(app)).Methods("GET")
 	app.Router.HandleFunc("/my/password", accounts.UpdatePassword(app)).Methods("PATCH")
 	app.Router.HandleFunc("/my/sandboxes", sandboxes.GetMySandboxes(app)).Methods("GET")

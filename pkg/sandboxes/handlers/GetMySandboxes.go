@@ -6,10 +6,10 @@ import (
 	"encoding/json"
 	"net/http"
 
-	authClient "github.com/mw-felker/terra-major-api/pkg/auth/client"
-	core "github.com/mw-felker/terra-major-api/pkg/core"
-	models "github.com/mw-felker/terra-major-api/pkg/sandboxes/models"
-	utils "github.com/mw-felker/terra-major-api/pkg/utils"
+	authClient "github.com/maxfelker/terra-major-api/pkg/auth/client"
+	core "github.com/maxfelker/terra-major-api/pkg/core"
+	models "github.com/maxfelker/terra-major-api/pkg/sandboxes/models"
+	utils "github.com/maxfelker/terra-major-api/pkg/utils"
 )
 
 func GetMySandboxes(app *core.App) http.HandlerFunc {

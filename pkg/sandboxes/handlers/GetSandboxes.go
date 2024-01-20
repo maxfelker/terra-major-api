@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	core "github.com/mw-felker/terra-major-api/pkg/core"
-	models "github.com/mw-felker/terra-major-api/pkg/sandboxes/models"
+	core "github.com/maxfelker/terra-major-api/pkg/core"
+	models "github.com/maxfelker/terra-major-api/pkg/sandboxes/models"
 )
 
 func GetSandboxes(app *core.App) http.HandlerFunc {

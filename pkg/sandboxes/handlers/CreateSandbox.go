@@ -5,11 +5,11 @@ import (
 	"net/http"
 	"strings"
 
-	authClient "github.com/mw-felker/terra-major-api/pkg/auth/client"
-	"github.com/mw-felker/terra-major-api/pkg/core"
-	models "github.com/mw-felker/terra-major-api/pkg/sandboxes/models"
-	"github.com/mw-felker/terra-major-api/pkg/terrains"
-	utils "github.com/mw-felker/terra-major-api/pkg/utils"
+	authClient "github.com/maxfelker/terra-major-api/pkg/auth/client"
+	"github.com/maxfelker/terra-major-api/pkg/core"
+	models "github.com/maxfelker/terra-major-api/pkg/sandboxes/models"
+	"github.com/maxfelker/terra-major-api/pkg/terrains"
+	utils "github.com/maxfelker/terra-major-api/pkg/utils"
 )
 
 func CreateSandbox(app *core.App) http.HandlerFunc {

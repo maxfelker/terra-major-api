@@ -7,11 +7,12 @@ import (
 	"regexp"
 	"strings"
 
-	models "github.com/mw-felker/terra-major-api/pkg/accounts/models"
-	"github.com/mw-felker/terra-major-api/pkg/core"
-	sandboxModels "github.com/mw-felker/terra-major-api/pkg/sandboxes/models"
-	terrains "github.com/mw-felker/terra-major-api/pkg/terrains"
-	"github.com/mw-felker/terra-major-api/pkg/utils"
+	models "github.com/maxfelker/terra-major-api/pkg/accounts/models"
+	authClient "github.com/maxfelker/terra-major-api/pkg/auth/client"
+	"github.com/maxfelker/terra-major-api/pkg/core"
+	sandboxModels "github.com/maxfelker/terra-major-api/pkg/sandboxes/models"
+	terrains "github.com/maxfelker/terra-major-api/pkg/terrains"
+	"github.com/maxfelker/terra-major-api/pkg/utils"
 )
 
 func validatePasswordRequirements(password string) bool {
@@ -83,11 +84,8 @@ func CreateAccount(app *core.App) http.HandlerFunc {
 			return
 		}
 
-		var accountResponse models.AccountResponse
-		accountResponse.BaseAccount = newAccount.BaseAccount
-		accountResponse.Sandbox = newSandbox
-
-		response, e := json.Marshal(accountResponse)
+		token := authClient.GenerateToken(newAccount.ID, newSandbox.ID, "")
+		response, e := json.Marshal(authClient.TokenResponse{Token: token})
 		if e != nil {
 			utils.ReturnError(writer, e.Error(), http.StatusInternalServerError)
 			return
