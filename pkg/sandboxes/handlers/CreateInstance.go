@@ -29,8 +29,7 @@ func CreateInstance(app *core.App) http.HandlerFunc {
 		}
 
 		if newInstance.CharacterId == "" {
-			http.Error(writer, "characterId is required", http.StatusBadRequest)
-			return
+			newInstance.CharacterId = models.GM_UUID
 		}
 
 		if newInstance.PrefabName == "" {

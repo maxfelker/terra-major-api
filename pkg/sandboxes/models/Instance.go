@@ -7,6 +7,10 @@ import (
 	"gorm.io/gorm"
 )
 
+const (
+	GM_UUID = "f1c9f0a6-695f-424a-9424-60a5e96032df"
+)
+
 type Instance struct {
 	ID          string    `gorm:"type:uuid;primary_key;unique;" json:"id"`
 	SandboxId   string    `gorm:"type:uuid;not null" json:"sandboxId"`
