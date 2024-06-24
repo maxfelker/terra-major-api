@@ -7,11 +7,11 @@ import (
 	"regexp"
 	"strings"
 
-	models "github.com/mw-felker/terra-major-api/pkg/accounts/models"
-	"github.com/mw-felker/terra-major-api/pkg/core"
-	sandboxModels "github.com/mw-felker/terra-major-api/pkg/sandboxes/models"
-	terrains "github.com/mw-felker/terra-major-api/pkg/terrains"
-	"github.com/mw-felker/terra-major-api/pkg/utils"
+	models "github.com/maxfelker/terra-major-api/pkg/accounts/models"
+	"github.com/maxfelker/terra-major-api/pkg/core"
+	sandboxModels "github.com/maxfelker/terra-major-api/pkg/sandboxes/models"
+	terrains "github.com/maxfelker/terra-major-api/pkg/terrains"
+	"github.com/maxfelker/terra-major-api/pkg/utils"
 )
 
 func validatePasswordRequirements(password string) bool {

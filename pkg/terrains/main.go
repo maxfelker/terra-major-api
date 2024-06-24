@@ -4,8 +4,8 @@ import (
 	"log"
 
 	"github.com/google/uuid"
-	sandboxModels "github.com/mw-felker/terra-major-api/pkg/sandboxes/models"
-	terrainModels "github.com/mw-felker/terra-major-api/pkg/terrains/models"
+	sandboxModels "github.com/maxfelker/terra-major-api/pkg/sandboxes/models"
+	terrainModels "github.com/maxfelker/terra-major-api/pkg/terrains/models"
 )
 
 const (

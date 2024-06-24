@@ -6,7 +6,7 @@ import (
 
 	"github.com/Azure/azure-sdk-for-go/sdk/data/azcosmos"
 	"github.com/gorilla/mux"
-	"github.com/mw-felker/terra-major-api/pkg/utils"
+	"github.com/maxfelker/terra-major-api/pkg/utils"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"

@@ -1,10 +1,9 @@
-module github.com/mw-felker/terra-major-api
+module github.com/maxfelker/terra-major-api
 
 go 1.20
 
 require (
 	github.com/Azure/azure-sdk-for-go/sdk/data/azcosmos v0.3.5
-	github.com/aquilax/go-perlin v1.1.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/handlers v1.5.1

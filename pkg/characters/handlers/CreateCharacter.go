@@ -4,11 +4,11 @@ import (
 	"encoding/json"
 	"net/http"
 
-	accounts "github.com/mw-felker/terra-major-api/pkg/accounts/models"
-	authClient "github.com/mw-felker/terra-major-api/pkg/auth/client"
-	characters "github.com/mw-felker/terra-major-api/pkg/characters/models"
-	"github.com/mw-felker/terra-major-api/pkg/core"
-	utils "github.com/mw-felker/terra-major-api/pkg/utils"
+	accounts "github.com/maxfelker/terra-major-api/pkg/accounts/models"
+	authClient "github.com/maxfelker/terra-major-api/pkg/auth/client"
+	characters "github.com/maxfelker/terra-major-api/pkg/characters/models"
+	"github.com/maxfelker/terra-major-api/pkg/core"
+	utils "github.com/maxfelker/terra-major-api/pkg/utils"
 )
 
 func CreateCharacter(app *core.App) http.HandlerFunc {
