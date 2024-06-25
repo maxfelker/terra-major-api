@@ -32,7 +32,13 @@ func main() {
 	var PORT = utils.GetEnv("PORT", "8000")
 	app := core.CreateApp()
 	seedDb(app)
+	httpHandler := registerMuxHandlers(app)
+	http.Handle("/", httpHandler)
+	fmt.Println("Starting terra-major-api on port " + PORT)
+	http.ListenAndServe(":"+PORT, nil)
+}
 
+func registerMuxHandlers(app *core.App) http.Handler {
 	// Auth
 	app.Router.HandleFunc("/login", accounts.Login(app)).Methods("POST")
 	app.Router.HandleFunc("/tokens", auth.CreateUnityClientToken(app)).Methods("POST")
@@ -74,8 +80,5 @@ func main() {
 		handlers.AllowedOrigins([]string{"*"}),
 		handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}))
 
-	http.Handle("/", corsObj(app.Router))
-
-	fmt.Println("Starting terra-major-api on port " + PORT)
-	http.ListenAndServe(":"+PORT, nil)
+	return corsObj(app.Router)
 }
