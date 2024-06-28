@@ -1,0 +1,43 @@
+name: Trigger auto deployment for terra-major-instance-api
+
+# When this action will be executed
+on:
+  # Automatically trigger it when detected changes in repo
+  push:
+    branches: 
+      [ main ]
+    paths:
+    - '**'
+    - '.github/workflows/terra-major-instance-api-AutoDeployTrigger-aebc696a-4b99-4cbd-8361-ae1f47729e4c.yml'
+
+  # Allow manual trigger 
+  workflow_dispatch:
+      
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout to the branch
+        uses: actions/checkout@v2
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.TERRAMAJORINSTANCEAPI_AZURE_CREDENTIALS }}
+
+      - name: Build and push container image to registry
+        uses: azure/container-apps-deploy-action@v2
+        with:
+          appSourcePath: ${{ github.workspace }} 
+          registryUrl: terramajor.azurecr.io
+          registryUsername: ${{ secrets.TERRAMAJORINSTANCEAPI_REGISTRY_USERNAME }}
+          registryPassword: ${{ secrets.TERRAMAJORINSTANCEAPI_REGISTRY_PASSWORD }}
+          containerAppName: terra-major-instance-api
+          resourceGroup: terra-major-non-prod
+          imageToBuild: terramajor.azurecr.io/terra-major-api:${{ github.sha }}
+          
+            
+
+     
+
