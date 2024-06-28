@@ -1,7 +1,8 @@
 FROM golang:alpine  
 WORKDIR /app
 ENV GO111MODULE=on
-RUN go install github.com/cosmtrek/air@latest
+# Need to install air within docker to work
+RUN go install github.com/air-verse/air@latest 
 COPY main.go .
 COPY pkg/ pkg/
 COPY go.sum go.sum
