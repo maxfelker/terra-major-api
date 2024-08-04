@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
+	"strings"
 
 	"github.com/gorilla/handlers"
 
@@ -36,6 +38,21 @@ func main() {
 	http.Handle("/", httpHandler)
 	fmt.Println("Starting terra-major-api on port " + PORT)
 	http.ListenAndServe(":"+PORT, nil)
+}
+
+// Create a CORS handler with allowed origins
+func createCorsHandler() func(http.Handler) http.Handler {
+	orginsArray := os.Getenv("ALLOWED_ORIGINS")
+	fmt.Println("Allowed origins: " + orginsArray)
+	allowedOrigins := strings.Split(orginsArray, ",")
+	allowedMethods := []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"}
+	allheaders := []string{"X-Requested-With", "Content-Type", "Authorization"}
+
+	return handlers.CORS(
+		handlers.AllowedMethods(allowedMethods),
+		handlers.AllowedOrigins(allowedOrigins),
+		handlers.AllowedHeaders(allheaders),
+	)
 }
 
 func registerMuxHandlers(app *core.App) http.Handler {
@@ -75,9 +92,7 @@ func registerMuxHandlers(app *core.App) http.Handler {
 
 	app.Router.HandleFunc("/sandboxes/{sandboxId}/chunks", terrains.GetChunksBySandboxId(app)).Methods("GET")
 
-	corsObj := handlers.CORS(handlers.AllowedMethods([]string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"}),
-		handlers.AllowedOrigins([]string{"*"}),
-		handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}))
+	corsHandler := createCorsHandler()
 
-	return corsObj(app.Router)
+	return corsHandler(app.Router)
 }
