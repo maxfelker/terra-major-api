@@ -1,4 +1,4 @@
-version: "3.9" 
+
 
 x-db-variables: &db-variables
   POSTGRES_HOST: $POSTGRES_HOST
@@ -10,6 +10,10 @@ x-db-variables: &db-variables
   COSMOS_DB_PORT: $COSMOS_DB_PORT
   COSMOS_DB_PRIMARY_KEY: $COSMOS_DB_PRIMARY_KEY
   COSMOS_DB_NAME: $COSMOS_DB_NAME
+
+x-env-variables: &env-variables
+  <<: *db-variables
+  ALLOWED_ORIGINS: $ALLOWED_ORIGINS
 
 networks:
   local:
@@ -60,7 +64,7 @@ services:
       context: .
       dockerfile: ./Dockerfile.dev
     environment:
-      <<: *db-variables
+      <<: *env-variables
       PORT: 8000
     networks:
       local:
@@ -74,7 +78,7 @@ services:
       context: .
       dockerfile: ./Dockerfile
     environment:
-      <<: *db-variables
+      <<: *env-variables
       PORT: 80
     networks:
       local:
