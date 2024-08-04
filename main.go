@@ -67,6 +67,7 @@ func registerMuxHandlers(app *core.App) http.Handler {
 	app.Router.HandleFunc("/my/characters", characters.GetMyCharacters(app)).Methods("GET")
 
 	// Accounts
+	app.Router.HandleFunc("/accounts", accounts.GetAccounts(app)).Methods("GET")
 	app.Router.HandleFunc("/accounts", accounts.CreateAccount(app)).Methods("POST")
 	app.Router.HandleFunc("/accounts/{id}", accounts.GetAccountById(app)).Methods("GET")
 	app.Router.HandleFunc("/accounts/{id}", accounts.UpdateAccount(app)).Methods("PATCH")
