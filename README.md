@@ -7,7 +7,7 @@ Persistence cloud API to store locations of objects in Unity 3D space.
 First, create a `.env` file in the root of the directory with the following values:
 
 ```bash
-ALLOWED_ORIGINS=http://localhost:5173,https://localhost:5173,http://localhost,https://localhost
+ALLOWED_ORIGINS=http://localhost:5173,https://localhost:5173,http://localhost:5174,https://localhost:5174,http://localhost,https://localhost
 
 POSTGRES_HOST=postgres
 POSTGRES_USER=tmdbuser

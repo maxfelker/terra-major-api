@@ -27,7 +27,7 @@ func GetAccounts(app *core.App) http.HandlerFunc {
 			return
 		}
 
-		var baseAccounts []models.BaseAccount
+		baseAccounts := []models.BaseAccount{}
 		for _, account := range accounts {
 			baseAccounts = append(baseAccounts, models.BaseAccount{
 				ID:      account.ID,
